@@ -2,3 +2,4 @@
 .venv
 .idea/
 create_user_db.txt
+__pycache__
