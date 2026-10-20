@@ -1,3 +1,4 @@
 .env
 .venv
 .idea/
+create_user_db.txt
