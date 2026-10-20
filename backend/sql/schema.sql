@@ -1,0 +1,55 @@
+CREATE TABLE IF NOT EXISTS source_company_rows (
+    row_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "SYNTHETIC_U" TEXT NOT NULL,
+    "ORG_TYPE" TEXT,
+    "OKFS_NAME" TEXT,
+    "COMPANY_AGE_YEARS_GRADATION" TEXT,
+    "ECO_MARK_LABEL" TEXT,
+    "MAINOKVED_CODE" TEXT,
+    "MAINOKVED_NAME" TEXT,
+    "NEGATIVEMARK" TEXT,
+    "AMOUNT_WORKERS_FNS_GRADATION" TEXT,
+    "AMOUNT_WORKERS_SPARK_GRADATION" TEXT,
+    "CL_TYPE" TEXT,
+    "CL_PRODUCT_RKO_MARK" TEXT,
+    "CL_PRODUCT_GAR_MARK" TEXT,
+    "CL_PRODUCT_LOA_MARK" TEXT,
+    "CL_PRODUCT_LEA_MARK" TEXT,
+    "CL_PRODUCT_DEP_MARK" TEXT,
+    "CL_PRODUCT_ZPP_MARK" TEXT,
+    "FTS_FLAG" TEXT,
+    "FTS_COUNTRY_NAME" TEXT,
+    "FACTORING_MARK" TEXT,
+    "REVENUE_COMPANY" TEXT,
+    "GROUP_ID" TEXT,
+    "CITY" TEXT,
+    "REGION" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS companies (
+    company_id TEXT PRIMARY KEY,
+    profile JSONB,
+    source_row_count INTEGER NOT NULL,
+    is_ambiguous BOOLEAN NOT NULL,
+    industry_code TEXT,
+    industry_name TEXT,
+    region TEXT,
+    group_id TEXT,
+    revenue_raw NUMERIC(24, 2)
+);
+
+CREATE TABLE IF NOT EXISTS person_company_links (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    person_id TEXT NOT NULL,
+    city_name TEXT,
+    region_name TEXT,
+    company_id TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    beneficiary_id TEXT NOT NULL,
+    payer_id TEXT NOT NULL,
+    amount NUMERIC(24, 2) NOT NULL CHECK (amount >= 0),
+    payment_count BIGINT NOT NULL CHECK (payment_count >= 0)
+);
