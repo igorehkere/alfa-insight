@@ -11,3 +11,6 @@ dev:
 
 import:
 	$(PYTHON) backend/scripts/import_csv.py --data-dir data/raw
+
+parse-news:
+	PYTHONPATH=backend $(PYTHON) backend/scripts/fetch_news.py
