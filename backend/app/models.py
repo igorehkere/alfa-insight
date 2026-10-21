@@ -1,6 +1,6 @@
 from decimal import Decimal
-
-from sqlalchemy import BigInteger, Boolean, Integer, Numeric, Text
+from datetime import datetime
+from sqlalchemy import BigInteger, Boolean, Integer, Numeric, Text, DateTime, Identity, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -71,3 +71,28 @@ class SourceCompanyRow(Base):
     group_id: Mapped[str | None] = mapped_column("GROUP_ID", Text)
     city: Mapped[str | None] = mapped_column("CITY", Text)
     region: Mapped[str | None] = mapped_column("REGION", Text)
+
+
+class News(Base):
+    __tablename__ = "news_items"
+    id: Mapped[int] = mapped_column(
+        BigInteger,
+        Identity(),
+        primary_key=True,
+    )
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_url: Mapped[str] = mapped_column(
+        Text,
+        unique=True,
+        nullable=False,
+    )
+    source_name: Mapped[str] = mapped_column(Text, nullable=False)
+    category: Mapped[str | None] = mapped_column(Text,nullable=True)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
