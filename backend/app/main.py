@@ -1,7 +1,9 @@
 from fastapi import Depends, FastAPI, HTTPException, Query
-from psycopg import Connection
+from sqlalchemy import BigInteger, and_, distinct, false, func, inspect, or_, select
+from sqlalchemy.orm import Session
 
-from app.connect import connect
+from app.connect import get_session
+from app.models import Company, Payment, PersonCompanyLink, SourceCompanyRow
 
 app = FastAPI(title="Company Data API", version="0.1.0")
 
@@ -33,27 +35,26 @@ def company_features(profile: dict) -> dict:
         "region": profile.get("REGION"),
         "city": profile.get("CITY"),
         "bank_products": {
-            name: as_flag(profile.get(source))
-            for name, source in product_columns.items()
+            name: as_flag(profile.get(column))
+            for name, column in product_columns.items()
         },
         "has_customs_data": as_flag(profile.get("FTS_FLAG")),
         "customs_countries": [
-            country.strip() for country in (profile.get("FTS_COUNTRY_NAME") or "").split(",")
+            country.strip()
+            for country in (profile.get("FTS_COUNTRY_NAME") or "").split(",")
             if country.strip()
         ],
     }
 
 
-def known_company(conn: Connection, company_id: str) -> dict:
-    result = conn.execute(
-        "SELECT company_id, profile, source_row_count, is_ambiguous, "
-        "industry_code, industry_name, region, group_id, revenue_raw "
-        "FROM companies WHERE company_id = %s",
-        (company_id,),
-    ).fetchone()
-    if result is None:
-        raise HTTPException(404, "Компания отсутствует в предоставленном справочнике")
-    return result
+def known_company(session: Session, company_id: str) -> Company:
+    company = session.get(Company, company_id)
+    if company is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Компания отсутствует в предоставленном справочнике",
+        )
+    return company
 
 
 @app.get("/health")
@@ -66,62 +67,100 @@ def list_companies(
     search: str = Query(default="", max_length=100),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    conn: Connection = Depends(connect),
+    session: Session = Depends(get_session),
 ) -> dict:
-    query = "%" + search.strip() + "%"
-    rows = conn.execute(
-        "SELECT company_id, industry_name, region, is_ambiguous "
-        "FROM companies WHERE company_id ILIKE %s OR industry_name ILIKE %s "
-        "ORDER BY company_id LIMIT %s OFFSET %s",
-        (query, query, limit, offset),
-    ).fetchall()
-    return {"items": rows, "limit": limit, "offset": offset}
+    pattern = f"%{search.strip()}%"
+    stmt = (
+        select(Company)
+        .where(
+            or_(
+                Company.company_id.ilike(pattern),
+                Company.industry_name.ilike(pattern),
+            )
+        )
+        .order_by(Company.company_id)
+        .limit(limit)
+        .offset(offset)
+    )
+    companies = session.scalars(stmt).all()
+    return {
+        "items": [
+            {
+                "company_id": company.company_id,
+                "industry_name": company.industry_name,
+                "region": company.region,
+                "is_ambiguous": company.is_ambiguous,
+            }
+            for company in companies
+        ],
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 @app.get("/api/companies/{company_id}")
-def company_profile(company_id: str, conn: Connection = Depends(connect)) -> dict:
-    company = known_company(conn, company_id)
-    if company["is_ambiguous"]:
+def company_profile(company_id: str, session: Session = Depends(get_session)) -> dict:
+    company = known_company(session, company_id)
+    if company.is_ambiguous:
         raise HTTPException(
             status_code=409,
-            detail=(f"У {company_id} противоречащие исходные профили ({company['source_row_count']} строк). Требуется проверка."),
+            detail=(
+                f"У {company_id} противоречащие исходные профили "
+                f"({company.source_row_count} строк). Требуется проверка."
+            ),
         )
 
-    summary = conn.execute(
-        """
-        SELECT
-          COUNT(DISTINCT payer_id) FILTER (
-            WHERE beneficiary_id = %(id)s AND payer_id <> %(id)s
-          ) AS incoming_counterparties,
-          COUNT(DISTINCT beneficiary_id) FILTER (
-            WHERE payer_id = %(id)s AND beneficiary_id <> %(id)s
-          ) AS outgoing_counterparties,
-          COUNT(*) FILTER (
-            WHERE payer_id = %(id)s AND beneficiary_id = %(id)s
-          ) AS self_payment_rows
-        FROM payments
-        WHERE payer_id = %(id)s OR beneficiary_id = %(id)s
-        """,
-        {"id": company_id},
-    ).fetchone()
-    people = conn.execute(
-        "SELECT COUNT(DISTINCT person_id) AS count "
-        "FROM person_company_links WHERE company_id = %s",
-        (company_id,),
-    ).fetchone()["count"]
+    incoming = func.count(distinct(Payment.payer_id)).filter(
+        and_(
+            Payment.beneficiary_id == company_id,
+            Payment.payer_id != company_id,
+        )
+    )
+    outgoing = func.count(distinct(Payment.beneficiary_id)).filter(
+        and_(
+            Payment.payer_id == company_id,
+            Payment.beneficiary_id != company_id,
+        )
+    )
+    own = func.count().filter(
+        and_(
+            Payment.payer_id == company_id,
+            Payment.beneficiary_id == company_id,
+        )
+    )
+    payment_summary = session.execute(
+        select(
+            incoming.label("incoming_counterparties"),
+            outgoing.label("outgoing_counterparties"),
+            own.label("self_payment_rows"),
+        ).where(
+            or_(
+                Payment.payer_id == company_id,
+                Payment.beneficiary_id == company_id,
+            )
+        )
+    ).mappings().one()
+
+    people_count = session.scalar(
+        select(func.count(distinct(PersonCompanyLink.person_id))).where(
+            PersonCompanyLink.company_id == company_id
+        )
+    )
+    profile = company.profile or {}
     return {
-        "company_id": company["company_id"],
-        "industry": company["industry_name"],
-        "industry_code": company["industry_code"],
-        "region": company["region"],
-        "group_id": company["group_id"],
-        "revenue_raw": (str(company["revenue_raw"])
-                        if company["revenue_raw"] is not None else None),
-        "raw_profile": company["profile"],  # All 24 CSV fields, not just five.
-        "features": company_features(company["profile"]),
-        "source_row_count": company["source_row_count"],
-        "linked_person_ids_count": people,
-        "payment_summary": summary,
+        "company_id": company.company_id,
+        "industry": company.industry_name,
+        "industry_code": company.industry_code,
+        "region": company.region,
+        "group_id": company.group_id,
+        "revenue_raw": (
+            str(company.revenue_raw) if company.revenue_raw is not None else None
+        ),
+        "raw_profile": company.profile,
+        "features": company_features(profile),
+        "source_row_count": company.source_row_count,
+        "linked_person_ids_count": people_count or 0,
+        "payment_summary": dict(payment_summary),
         "data_notes": {
             "revenue_currency_and_units_verified": False,
             "payment_period_known": False,
@@ -137,38 +176,50 @@ def counterparties(
     direction: str = Query(default="outgoing", pattern="^(incoming|outgoing)$"),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    conn: Connection = Depends(connect),
+    session: Session = Depends(get_session),
 ) -> dict:
-    known_company(conn, company_id)
-    if direction == "incoming":
-        other_column, self_column = "payer_id", "beneficiary_id"
-    else:
-        other_column, self_column = "beneficiary_id", "payer_id"
+    known_company(session, company_id)
 
-    # Названия столбцов выбираются только из двух заданных случаев.
-    query = f"""
-        SELECT
-            p.{other_column} AS company_id,
-            SUM(p.amount) AS payment_amount,
-            SUM(p.payment_count)::BIGINT AS payments_count,
-            c.industry_name AS industry,
-            c.region AS region,
-            COALESCE(c.is_ambiguous, FALSE) AS ambiguous_profile
-        FROM payments p
-        LEFT JOIN companies c ON c.company_id = p.{other_column}
-        WHERE p.{self_column} = %s AND p.{other_column} <> %s
-        GROUP BY p.{other_column}, c.industry_name, c.region, c.is_ambiguous
-        ORDER BY payment_amount DESC, company_id
-        LIMIT %s OFFSET %s
-    """
-    rows = conn.execute(query, (company_id, company_id, limit, offset)).fetchall()
+    if direction == "incoming":
+        other_column = Payment.payer_id
+        self_column = Payment.beneficiary_id
+    else:
+        other_column = Payment.beneficiary_id
+        self_column = Payment.payer_id
+
+    total_amount = func.sum(Payment.amount).label("payment_amount")
+    total_count = func.sum(Payment.payment_count).cast(BigInteger).label("payments_count")
+    stmt = (
+        select(
+            other_column.label("company_id"),
+            total_amount,
+            total_count,
+            Company.industry_name.label("industry"),
+            Company.region.label("region"),
+            func.coalesce(Company.is_ambiguous, false()).label("ambiguous_profile"),
+        )
+        .select_from(Payment)
+        .outerjoin(Company, Company.company_id == other_column)
+        .where(self_column == company_id, other_column != company_id)
+        .group_by(
+            other_column, Company.industry_name, Company.region, Company.is_ambiguous
+        )
+        .order_by(total_amount.desc(), other_column)
+        .limit(limit)
+        .offset(offset)
+    )
+    rows = session.execute(stmt).mappings().all()
     return {
         "company_id": company_id,
         "direction": direction,
         "limit": limit,
         "offset": offset,
         "items": [
-            {**row, "payment_amount": str(row["payment_amount"])} for row in rows
+            {
+                **dict(row),
+                "payment_amount": str(row["payment_amount"]),
+            }
+            for row in rows
         ],
     }
 
@@ -178,18 +229,28 @@ def linked_people(
     company_id: str,
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    conn: Connection = Depends(connect),
+    session: Session = Depends(get_session),
 ) -> dict:
-    known_company(conn, company_id)
-    rows = conn.execute(
-        "SELECT person_id, city_name, region_name "
-        "FROM person_company_links WHERE company_id = %s "
-        "ORDER BY person_id LIMIT %s OFFSET %s",
-        (company_id, limit, offset),
-    ).fetchall()
-    return {"company_id": company_id, "items": rows,
-            "limit": limit, "offset": offset,
-            "note": "Тип юридической связи человека с компанией в датасете не задан"}
+    known_company(session, company_id)
+    stmt = (
+        select(
+            PersonCompanyLink.person_id,
+            PersonCompanyLink.city_name,
+            PersonCompanyLink.region_name,
+        )
+        .where(PersonCompanyLink.company_id == company_id)
+        .order_by(PersonCompanyLink.person_id)
+        .limit(limit)
+        .offset(offset)
+    )
+    rows = session.execute(stmt).mappings().all()
+    return {
+        "company_id": company_id,
+        "items": [dict(row) for row in rows],
+        "limit": limit,
+        "offset": offset,
+        "note": "Тип юридической связи человека с компанией в датасете не задан",
+    }
 
 
 @app.get("/api/companies/{company_id}/source-records")
@@ -197,13 +258,34 @@ def source_records(
     company_id: str,
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    conn: Connection = Depends(connect),
+    session: Session = Depends(get_session),
 ) -> dict:
-    known_company(conn, company_id)
-    rows = conn.execute(
-        "SELECT row_id, to_jsonb(s) - 'row_id' AS profile "
-        'FROM source_company_rows s WHERE "SYNTHETIC_U" = %s '
-        'ORDER BY row_id LIMIT %s OFFSET %s',
-        (company_id, limit, offset),
-    ).fetchall()
-    return {"company_id": company_id, "items": rows, "limit": limit, "offset": offset}
+    known_company(session, company_id)
+    stmt = (
+        select(SourceCompanyRow)
+        .where(SourceCompanyRow.synthetic_u == company_id)
+        .order_by(SourceCompanyRow.row_id)
+        .limit(limit)
+        .offset(offset)
+    )
+    source_rows = session.scalars(stmt).all()
+
+    source_columns = [
+        attr for attr in inspect(SourceCompanyRow).column_attrs
+        if attr.key != "row_id"
+    ]
+    return {
+        "company_id": company_id,
+        "items": [
+            {
+                "row_id": row.row_id,
+                "profile": {
+                    attr.columns[0].name: getattr(row, attr.key)
+                    for attr in source_columns
+                },
+            }
+            for row in source_rows
+        ],
+        "limit": limit,
+        "offset": offset,
+    }
