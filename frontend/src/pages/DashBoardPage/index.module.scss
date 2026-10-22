@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.container {
+    min-height: 100vh;
+    width: 100%;
+
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/background.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .invite {
+        height: 256px;
+        width: 500px;
+        background-color: white;
+        border-radius: 20px;
+        padding: 42px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        .newFunc {
+            p {
+                font-weight: 700;
+                font-size: 14px;
+                color: #FF0000;
+                font-family: "Inter Variable", sans-serif;
+            }
+        }
+        .analytic {
+            font-weight: 600;
+            font-size: 24px;
+            color: black;
+            font-family: "Inter Variable", sans-serif;
+        }
+        .info {
+            color: black;
+            font-weight: 400;
+            font-size: 16px;
+            font-family: "Inter Variable", sans-serif;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            .butTry {
+                height: 39px;
+                width: 270px;
+                font-family: "Inter Variable", sans-serif;
+                font-weight: 400;
+                font-size: 16px;
+                border-radius: 10px;
+                border: none;
+                background-color: #F01A21;
+                color: white
+            }
+            .butTry:hover {
+                cursor: pointer;
+                background-color: #8e1014;
+            }
+            .butLater {
+                height: 39px;
+                width: 152px;
+                border: none;
+                border-radius: 10px;
+                background-color: #E7EFF7;
+                font-family: "Inter Variable", sans-serif;
+                font-weight: 400;
+                font-size: 16px;
+            }
+            .butLater:hover {
+                cursor: pointer;
+                background-color: #abb0b5;
+            }
+        }
+    }
+}
