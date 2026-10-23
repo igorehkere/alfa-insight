@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { getNews, type News } from '../../api/news';
 import { NewsDetailsPage } from '../NewsDetailsPage';
 import css from './index.module.scss';
+import { Loader } from '../../components/Loader';
 
 export const NewsFeedPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,7 +75,7 @@ export const NewsFeedPage = () => {
         <h1>Персональная аналитика событий</h1>
         {companyId && <p className={css.company}>Выбранная компания: {companyId}</p>}
         <h2 className={css.subtitle}>Новости</h2>
-        {loading && <p>Загрузка новостей...</p>}
+        {loading && <Loader type='page'/>}
         {error && <p>{error}</p>}
         {!loading && !error && news.length === 0 && <p>Новостей пока нет.</p>}
         <div className={css.newsList}>
