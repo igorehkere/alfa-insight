@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 
 from app.connect import get_session
 from app.models import Company, Payment, PersonCompanyLink, SourceCompanyRow
+from app.news.router import router as news_router
 
 app = FastAPI(title="Company Data API", version="0.1.0")
-
+app.include_router(news_router)
 
 def as_flag(value: str | None) -> bool | None:
     if value in ("1", "1.0"):
