@@ -1,0 +1,8 @@
+{
+  "gemma-4": "google/gemma-4-26b-a4b-it",
+  "glm-5.3": "z-ai/glm-5.3-flash",
+  "qwen3.6": "qwen/qwen3.6-35b-a3b",
+  "deepseek-v4.1": "deepseek/deepseek-v4.1-flash",
+  "qwen3-vl": "qwen/qwen3-vl-30b-a3b-instruct",
+  "kimi-k2.6": "moonshotai/kimi-k2.6"
+}
