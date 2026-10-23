@@ -1,0 +1,21 @@
+# Optional image for Dima's CLI and for Igor to reuse in the integrated backend.
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/srv RAG_MODEL_CACHE=/models \
+    RAG_CPU_THREADS=2 TOKENIZERS_PARALLELISM=false
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr tesseract-ocr-rus tesseract-ocr-eng libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /srv
+COPY requirements.txt /srv/requirements.txt
+# Install CPU PyTorch first, avoiding the large CUDA runtime on the server.
+RUN pip install --no-cache-dir 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -r /srv/requirements.txt
+COPY app/agent /srv/app/agent
+COPY app/rag /srv/app/rag
+RUN useradd --uid 10001 --create-home dima \
+    && mkdir -p /data /models && chown -R dima:dima /data /models
+USER dima
+WORKDIR /data
+ENTRYPOINT ["python", "-m", "app.rag.cli"]
+CMD ["--help"]

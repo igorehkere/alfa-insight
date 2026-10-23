@@ -1,0 +1,97 @@
+{
+  "notice": "Только синтетические тестовые данные. Не реальные компании и не подтверждённые публикации.",
+  "companies": [
+    {
+      "company_id": "DEMO_AUTO",
+      "industry": "Оптовая торговля автомобильными деталями",
+      "region": "Москва",
+      "group_id": null,
+      "features": {
+        "industry_name": "Оптовая торговля автомобильными деталями",
+        "industry_code": "45.31",
+        "region": "Москва",
+        "bank_products": {
+          "loan": true,
+          "deposit": false,
+          "leasing": null,
+          "factoring": null
+        },
+        "has_customs_data": true,
+        "customs_countries": [
+          "Китай"
+        ]
+      },
+      "payment_summary": {
+        "incoming_counterparties": 0,
+        "outgoing_counterparties": 0
+      },
+      "data_notes": {
+        "revenue_currency_and_units_verified": false,
+        "payment_period_known": false,
+        "payment_link_does_not_prove_supplier_relationship": true,
+        "linked_person_legal_role_known": false
+      },
+      "provenance": "synthetic_fixture"
+    },
+    {
+      "company_id": "DEMO_BUILD",
+      "industry": "Строительство инженерных сооружений",
+      "region": "Иркутская область",
+      "group_id": null,
+      "features": {
+        "industry_name": "Строительство инженерных сооружений",
+        "industry_code": "42.99",
+        "region": "Иркутская область",
+        "bank_products": {
+          "loan": false,
+          "deposit": true,
+          "leasing": null,
+          "factoring": null
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "payment_summary": {
+        "incoming_counterparties": 0,
+        "outgoing_counterparties": 0
+      },
+      "data_notes": {
+        "revenue_currency_and_units_verified": false,
+        "payment_period_known": false,
+        "payment_link_does_not_prove_supplier_relationship": true,
+        "linked_person_legal_role_known": false
+      },
+      "provenance": "synthetic_fixture"
+    }
+  ],
+  "news": [
+    {
+      "id": "demo-rates",
+      "title": "Учебная новость: ключевая ставка сохранена",
+      "body": "Учебный сценарий: регулятор сохранил ключевую ставку. Условия кредитования отдельных компаний в этом примере не раскрываются.",
+      "source": "synthetic_fixture",
+      "source_url": null,
+      "published_at": "2026-10-20T10:00:00+03:00",
+      "provenance": "synthetic_fixture"
+    },
+    {
+      "id": "demo-build",
+      "title": "Учебная новость: строительство в Иркутской области",
+      "body": "Учебный сценарий: в Иркутской области обсуждается строительство инженерных сооружений. Контракты конкретных компаний не указаны.",
+      "source": "synthetic_fixture",
+      "source_url": null,
+      "published_at": "2026-10-20T10:00:00+03:00",
+      "provenance": "synthetic_fixture"
+    },
+    {
+      "id": "demo-trade",
+      "title": "Учебная новость: импорт из Китая",
+      "body": "Учебный сценарий: обсуждаются изменения логистики импорта из Китая. Сведения о поставках конкретной компании отсутствуют.",
+      "source": "synthetic_fixture",
+      "source_url": null,
+      "published_at": "2026-10-20T10:00:00+03:00",
+      "provenance": "synthetic_fixture"
+    }
+  ],
+  "counterparties": {}
+}

@@ -1,0 +1,35 @@
+services:
+  rag-db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: dima_rag
+      POSTGRES_USER: dima
+      POSTGRES_PASSWORD: ${DIMA_DB_PASSWORD:?Set DIMA_DB_PASSWORD in your shell}
+    volumes:
+      - dima_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dima -d dima_rag"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+  rag:
+    profiles: [tools]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dima
+    environment:
+      RAG_DATABASE_URL: postgresql://dima:${DIMA_DB_PASSWORD}@rag-db:5432/dima_rag
+      RAG_MODEL_CACHE: /models
+      RAG_EMBEDDING_REVISION: ${RAG_EMBEDDING_REVISION:-614241f622f53c4eeff9890bdc4f31cfecc418b3}
+      RAG_LOCAL_FILES_ONLY: ${RAG_LOCAL_FILES_ONLY:-0}
+    volumes:
+      - dima_data:/data
+      - dima_models:/models
+    depends_on:
+      rag-db:
+        condition: service_healthy
+volumes:
+  dima_pg:
+  dima_data:
+  dima_models:
