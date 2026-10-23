@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Альфа-Банк">
+  <rect width="64" height="64" rx="8" fill="#121212"/>
+  <path fill="#EF3124" fill-rule="evenodd" d="M 14.3 42.1 L 25.5 11.3 C 26.7 8.1 28.7 6.7 32 6.7 C 35.3 6.7 37.4 8.1 38.5 11.3 L 49.7 42.1 H 42.6 L 40 34.5 H 24 L 21.4 42.1 Z M 32 17.1 L 26.2 28.8 H 37.8 Z"/>
+  <rect x="14.3" y="49.1" width="35.4" height="6.4" rx="1.4" fill="#EF3124"/>
+</svg>

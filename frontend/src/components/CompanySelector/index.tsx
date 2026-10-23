@@ -28,17 +28,13 @@ export const CompanySelector = ({ onBack, onContinue }: CompanySelectorProps) =>
 
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchCompanies = async () => {
       try {
         const response = await fetch('/api/companies?limit=10', { signal: controller.signal });
-
         if (!response.ok) {
           throw new Error('Не удалось загрузить компании');
         }
-
         const data: CompanyResponse = await response.json();
-
         setCompanies(data.items);
       } catch {
         if (!controller.signal.aborted) {
@@ -50,7 +46,6 @@ export const CompanySelector = ({ onBack, onContinue }: CompanySelectorProps) =>
         }
       }
     };
-
     fetchCompanies();
 
     return () => controller.abort();

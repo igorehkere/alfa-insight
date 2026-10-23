@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
-
 import { getAnalyticsPageRoute } from '../../lib/routes';
 import { CompanySelector } from '../../components/CompanySelector';
-
 import css from './index.module.scss';
 
 type Step = 'welcome' | 'company';
@@ -79,9 +77,7 @@ export const DashBoardPage = () => {
               transition={{ duration: 0.25 }}
             >
               <h2 className={css.analytic}>Настройка аналитики</h2>
-
               <p className={css.info}>Выберите компанию, для которой хотите получать персональную аналитику.</p>
-
               <CompanySelector onBack={() => setStep('welcome')} onContinue={handleContinue} />
             </motion.div>
           )}
