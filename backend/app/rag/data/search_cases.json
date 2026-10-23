@@ -1,0 +1,12 @@
+[
+  {"query": "ключевая ставка", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "прогноз ставки", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "пауза на заседании", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "23 октября", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "13,5%", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "риторика ЦБ", "as_of": "2026-10-20", "expected_document_id": "alfa-rate-2026-09-11", "expected_page": 1},
+  {"query": "астероиды", "as_of": "2026-10-20", "expected_document_id": null},
+  {"query": "строительство мостов", "as_of": "2026-10-20", "expected_document_id": null},
+  {"query": "interest rate outlook", "as_of": "2026-10-20", "expected_document_id": null},
+  {"query": "ключевая ставка", "as_of": "2026-09-01", "expected_document_id": null}
+]
