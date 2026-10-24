@@ -8,7 +8,7 @@ notes.md
 
 # Local debug server and frontend
 /backend/app/test/
-/tests/
+# /tests/
 
 # Local regression checks
 /backend/app/agent/tests/test_chat_context.py

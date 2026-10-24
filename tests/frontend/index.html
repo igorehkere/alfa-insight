@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ef3124">
+  <title>Альфа Инсайт — локальная проверка</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23ef3124'/%3E%3Ctext x='20' y='29' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='30' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/tests/styles.css">
+  <script type="module" src="/tests/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/tests/"><span class="brand-mark">А</span><span>альфа<span class="brand-light">инсайт</span></span></a>
+    <div class="top-actions"><span class="local-label">Локальный стенд</span><span id="health-status" class="status-pill">Подключение…</span><a class="text-link" href="/docs" target="_blank" rel="noopener">Swagger ↗</a></div>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <div><p class="eyebrow">БИЗНЕС В КОНТЕКСТЕ СОБЫТИЙ</p><h1>От события — к решению<span class="red-dot">.</span></h1><p class="subtitle">Новости, экспертный взгляд банка и аналитика для вашей компании.</p></div>
+      <div class="hero-note"><span class="pulse-dot"></span>Ваш локальный рабочий стол</div>
+    </section>
+    <ol class="stepper" aria-label="Этапы проверки"><li id="step-context" class="active"><span>1</span>Контекст</li><li id="step-news"><span>2</span>Новости</li><li id="step-analysis"><span>3</span>Аналитика и диалог</li></ol>
+    <section id="setup-panel" class="setup-grid">
+      <div class="panel setup-card">
+        <div class="section-heading"><span class="mini-icon">↗</span><div><h2>Сначала — ваш контекст</h2><p>Выберите компанию и представьтесь.</p></div></div>
+        <form id="context-form">
+          <label for="company-search">Найти компанию</label><input id="company-search" type="search" placeholder="ID компании или отрасль" maxlength="100" autocomplete="off">
+          <label for="company-select">Компания <span class="required">*</span></label><select id="company-select" required><option value="">Загружаем список…</option></select>
+          <div class="form-row"><div><label for="employee-name">Сотрудник <span class="required">*</span></label><input id="employee-name" placeholder="Ваше имя" value="Дима" required maxlength="80" autocomplete="given-name"></div><div><label for="employee-role">Роль сотрудника</label><select id="employee-role"><option value="analyst">Аналитик</option><option value="director">Руководитель</option><option value="finance">Финансовый директор</option><option value="manager">Клиентский менеджер</option></select></div></div>
+          <p class="field-note">Демонстрационный профиль. Роль и имя сохраняются только в этом браузере и не меняют права доступа.</p>
+          <div id="context-error" class="error-box" role="alert" hidden></div><button id="open-news" class="button primary wide" type="submit">Перейти к новостям <span>→</span></button>
+        </form>
+      </div>
+      <aside class="intro-card"><span class="intro-kicker">СОБЫТИЕ. КОНТЕКСТ. РЕШЕНИЕ.</span><h2>Важна не просто<br>новость.<br><span>А её влияние.</span></h2><p>Посмотрите на событие через особенности бизнеса — и проверьте, на чём основан каждый вывод.</p><div class="intro-flow"><div><span>01</span><strong>Выберите событие</strong><p>Новости из каталога проекта</p></div><div><span>02</span><strong>Изучите влияние</strong><p>Факты, риски и позиция банка</p></div><div><span>03</span><strong>Уточните детали</strong><p>Диалог с сохранением контекста</p></div></div><span class="intro-decor" aria-hidden="true">↗</span></aside>
+    </section>
+    <section id="context-strip" class="context-strip" hidden><div class="company-avatar">ЮЛ</div><div class="context-company"><strong id="active-company"></strong><span id="active-industry"></span></div><div class="context-person"><strong id="active-person"></strong><span id="active-role"></span></div><button id="change-context" class="button subtle" type="button">Сменить контекст</button><button id="choose-news" class="button primary" type="button">Выбрать новость <span>↗</span></button></section>
+    <section id="workspace" class="workspace" hidden>
+      <div class="main-column">
+        <div id="article-empty" class="panel empty-state"><span class="empty-icon">↗</span><h2>Начнём с события</h2><p>Выберите новость, чтобы увидеть её значение для компании.</p><button id="choose-news-empty" class="button primary">Открыть ленту</button></div>
+        <article id="article-panel" class="panel article" hidden><div class="article-meta"><span class="eyebrow">ВЫБРАННОЕ СОБЫТИЕ</span><span id="article-origin" class="tag"></span></div><h2 id="article-title"></h2><p id="article-meta" class="muted"></p><p id="article-body" class="article-body"></p><a id="article-link" class="text-link" target="_blank" rel="noopener noreferrer" hidden>Открыть первоисточник ↗</a></article>
+        <div id="analysis-loading" class="panel loading-panel" role="status" hidden><span class="spinner"></span><div><h3>Готовим персональный анализ</h3><p>Изучаем контекст, ищем материалы банка и проверяем выводы.</p></div><span id="analysis-timer" class="timer">0 с</span></div>
+        <div id="analysis-error" class="panel error-panel" role="alert" hidden><h3>Анализ пока не готов</h3><p id="analysis-error-text"></p><button id="retry-analysis" class="button primary">Повторить запрос</button><button id="error-diagnostics" class="button subtle">Посмотреть диагностику</button></div>
+        <section id="analysis-panel" hidden><div class="result-heading"><div><p class="eyebrow">ПЕРСОНАЛЬНЫЙ ВЗГЛЯД</p><h2>Что это значит для бизнеса</h2></div><button id="refresh-analysis" class="button subtle" title="Новый анализ использует квоту LLM">Обновить анализ ↻</button></div><div id="analysis-sections"></div><details id="warnings-box" class="panel warnings" hidden><summary id="warnings-title">Ограничения анализа</summary><ul id="warnings-list"></ul></details></section>
+        <section id="chat-panel" class="panel chat-panel" hidden><div class="section-heading"><span class="mini-icon">↗</span><div><h2>Обсудим подробнее</h2><p>Ответы в контексте этой компании и новости.</p></div></div><div id="chat-history" class="chat-history" aria-live="polite"></div><div id="chat-suggestions" class="suggestions"></div><form id="chat-form" class="chat-form"><label class="sr-only" for="chat-question">Вопрос по анализу</label><textarea id="chat-question" rows="2" maxlength="2000" placeholder="Что важно уточнить для нашей компании?" required></textarea><button id="send-question" class="button primary" type="submit">Отправить ↑</button></form><div id="chat-error" class="error-box" role="alert" hidden></div><p class="field-note">Каждый вопрос использует сохранённый анализ и его источники. В режиме живой модели отправка расходует квоту API.</p></section>
+      </div>
+      <aside class="side-column"><section class="panel sources-panel"><div class="aside-heading"><h3>Основание выводов</h3><span id="sources-count" class="count-pill">0</span></div><p id="sources-empty" class="muted">Источники появятся после анализа.</p><div id="sources-list"></div></section><details id="trace-panel" class="panel"><summary>Шаги агента <span id="trace-count" class="muted"></span></summary><ol id="trace-list" class="trace-list"></ol></details><details id="diagnostic-panel" class="panel"><summary>Диагностика</summary><p class="field-note">Последние вызовы модели. Без ключей и текста внутренних рассуждений.</p><button id="refresh-diagnostics" class="button subtle small">Обновить</button><div id="diagnostic-result" class="diagnostic-result"></div><details><summary>Ответ API</summary><pre id="raw-result">Анализ ещё не запущен.</pre></details><a class="text-link" href="/docs" target="_blank" rel="noopener">Проверить запрос в Swagger ↗</a></details></aside>
+    </section>
+    <footer>Альфа Инсайт <span>·</span> Локальная проверка пайплайна <span>·</span> Новости и аналитика требуют проверки перед бизнес-решениями.</footer>
+  </main>
+  <dialog id="news-dialog" aria-labelledby="news-heading"><div class="dialog-top"><div><p class="eyebrow">ШАГ 2 · ВЫБОР СОБЫТИЯ</p><h2 id="news-heading">Что происходит на рынке</h2><p id="news-context" class="muted"></p></div><button id="close-news" class="icon-button" aria-label="Закрыть новости">×</button></div><div class="news-toolbar"><div class="segmented"><button id="all-news" class="selected" type="button">Вся лента</button><button id="personal-news" type="button">Для компании</button></div><label class="sr-only" for="news-search">Поиск новости</label><input id="news-search" type="search" placeholder="Тема, источник или ID новости"><button id="reload-news" class="button subtle" type="button">Обновить ↻</button></div><div id="news-error" class="error-box" role="alert" hidden></div><p id="news-count" class="field-note"></p><div id="news-list" class="news-list"></div><details class="manual-news"><summary>Добавить свой текст для проверки</summary><form id="manual-form"><label for="manual-title">Заголовок</label><input id="manual-title" required maxlength="500"><label for="manual-body">Текст новости</label><textarea id="manual-body" rows="4" required maxlength="24000"></textarea><div class="form-row"><div><label for="manual-url">Ссылка, необязательно</label><input id="manual-url" type="url" placeholder="https://…"></div><div><label for="manual-date">Дата, необязательно</label><input id="manual-date" type="datetime-local"></div></div><p class="field-note">Материал будет отмечен как добавленный вручную. По ссылке ничего не скачивается.</p><button id="save-manual" class="button primary" type="submit">Добавить в ленту</button><div id="manual-error" class="error-box" role="alert" hidden></div><p id="manual-success" class="success-text" hidden></p></form></details><div class="dialog-foot"><span>Выбор новости запускает анализ. Готовый результат берётся из кеша.</span><span class="tag">Каталог проекта</span></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
