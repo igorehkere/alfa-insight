@@ -26,3 +26,5 @@ sentence-transformers==5.7.0       # multilingual-e5-small embeddings on CPU (in
 pgvector==0.4.2                    # PostgreSQL vector adapter; server extension installed separately
 numpy==2.5.4                       # Embedding validation and local cosine similarity
 torch==2.14.1                      # CPU inference runtime; install CPU wheel first (see EXPLANATION.md)
+feedparser==6.0.14                 # Existing Igor RSS parser
+beautifulsoup4==4.15.0             # Existing Igor HTML cleaning

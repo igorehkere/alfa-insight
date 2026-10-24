@@ -1,7 +1,7 @@
 """Validated LLM settings and model aliases. No configuration is loaded on import."""
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import (
     Field,
@@ -52,6 +52,9 @@ class LLMSettings(BaseSettings):
     )
 
     base_url: HttpUrl
+    fallback_base_url: HttpUrl | None = None
+    reasoning_effort: Literal["none", "minimal", "low", "medium", "high"] | None = "none"
+    json_mode: bool = True
     api_key: SecretStr = Field(min_length=1, repr=False)
     model: NonEmptyText
     timeout_seconds: float = Field(default=30, gt=0, allow_inf_nan=False)
@@ -66,6 +69,11 @@ class LLMSettings(BaseSettings):
         ):
             raise ValueError("Нужен HTTPS URL без учётных данных и параметров")
         return value
+
+    @field_validator("fallback_base_url")
+    @classmethod
+    def validate_fallback_url(cls, value):
+        return cls.validate_base_url(value) if value is not None else None
 
     @field_validator("api_key")
     @classmethod

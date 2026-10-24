@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Protocol
 
 from app.agent.errors import AmbiguousProfile, InvalidInput, NotFound
-from app.rag.search import JsonBankSearch, tokens
+from app.rag.search import JsonBankSearch, tokens, topics
 
 FIXTURES = Path(__file__).with_name("data") / "fixtures.json"
 
@@ -39,6 +39,7 @@ def news_from_record(record) -> dict:
         raise InvalidInput("Текст новости должен быть строкой")
     published = get("published_at")
     return {"id": str(identifier), "title": title, "body": body[:24000],
+            "topic_tags": sorted(topics(title + " " + body)),
             "source": get("source") or get("source_name") or "unknown",
             "source_url": get("source_url"),
             "published_at": published.isoformat() if hasattr(published, "isoformat") else published,

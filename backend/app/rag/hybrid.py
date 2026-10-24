@@ -3,6 +3,16 @@ from collections import Counter
 from datetime import date
 from app.rag.search import tokens, topics
 
+POLICY_VERSION = "evidence-topics-v2"
+
+
+def filter_bank_results(rows, query):
+    """Cosine similarity alone must not make unrelated prose bank evidence."""
+    query_topics = topics(query)
+    terms = {term for term in tokens(query) if len(term) > 3}
+    return [row for row in rows if (bool(query_topics & topics(row["text"])) if query_topics else
+            bool(terms) and len(terms & set(tokens(row["text"]))) >= min(2, len(terms)))]
+
 
 def validate_query(query, limit):
     if not query.strip() or len(query) > 500 or not 1 <= limit <= 10:
@@ -19,6 +29,8 @@ def fuse(semantic, lexical, query, limit=5, *, bank=True):
     found = []
     for key, score in scores.items():
         row = rows[key]
+        if bank and not filter_bank_results([row], query):
+            continue
         score += 0.001 * len(topics(query) & set(row.get("topics", [])))
         found.append({**row["metadata"], "text": row["text"], "score": round(score, 8), "_id": key})
     found.sort(key=lambda row: (-row["score"], row["_id"]))

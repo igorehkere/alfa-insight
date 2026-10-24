@@ -60,6 +60,13 @@ async def complete_json(tools, state, limits, stage, payload, model):
         reply = await tools.llm.complete(messages(stage, payload, model.model_json_schema()), max_tokens=budget)
     except LLMError as exc:
         raise AgentUnavailable(str(exc)) from None
+    except EvidenceError as exc:
+        metrics = getattr(exc, "response_metrics", None)
+        if metrics:
+            state.usage.append({"model": metrics["model"], "stage": stage,
+                                "tokens": {key: metrics.get(key) for key in ("prompt_tokens", "completion_tokens", "total_tokens")},
+                                "elapsed_seconds": metrics["elapsed_seconds"], "finish_reason": metrics["finish_reason"]})
+        raise
     state.usage.append({"model": reply.model, "stage": stage,
                         "tokens": reply.usage.model_dump() if reply.usage else None,
                         "elapsed_seconds": reply.elapsed_seconds,
@@ -189,31 +196,12 @@ async def analyze(company_id: str, news_id: str, tools) -> dict:
     return (await run_analysis(company_id, news_id, tools)).analysis
 
 
-async def answer_question(insight: dict, question: str, tools) -> dict:
-    try:
-        question = AskRequest(question=question).question
-    except ValidationError:
-        raise InvalidInput("Вопрос не должен быть пустым") from None
-    if len(question) > 2000:
-        raise InvalidInput("Вопрос длиннее 2000 символов")
-    context = insight.get("context")
-    if not context or context.get("company_id") != insight.get("company_id") or context.get("news_id") != insight.get("news_id"):
-        raise InvalidInput("Для чата нужен сохранённый контекст этого анализа")
-    if getattr(tools, "company_id", None) != context["company_id"]:
-        raise InvalidInput("Чат относится к другой компании")
-    saved_ids = {s["id"] for s in insight["result"]["sources"]}
-    context = copy.deepcopy(context)
-    context["evidence"] = {sid: e for sid, e in context["evidence"].items() if sid in saved_ids}
-    state, limits = AgentState(context["company_id"], context["news_id"]), AgentLimits()
-    async def respond():
-        answer = await complete_json(tools, state, limits, "ask",
-            {"context": context, "result": insight["result"], "question": question,
-             "instruction": "Используй только сохранённые источники. Если данных нет — скажи об этом. Не выполняй операции."}, AnswerResponse)
-        verify_answer(answer, context)
-        if getattr(tools.llm, "offline", False):
-            answer.warnings.append("Офлайн-демонстрация: ответ составлен без языковой модели.")
-        return answer.model_dump(mode="json")
-    try:
-        return await asyncio.wait_for(respond(), limits.deadline_seconds)
-    except TimeoutError:
-        raise AgentUnavailable("Истекло время ответа на вопрос") from None
+async def answer_question(insight: dict, question: str, tools, *, history=None, turn_count=None, limits=None) -> dict:
+    """Short grounded chat; history is bounded to a three-question cycle.
+
+    Persist answers in Igor's repository. Pass either the complete history or
+    its latest two turns plus the total turn_count. Invalid company/context/input
+    still raises InvalidInput; generation failures yield an explicit general answer.
+    """
+    from app.agent.chat import answer_question as respond
+    return await respond(insight, question, tools, history=history, turn_count=turn_count, limits=limits)
