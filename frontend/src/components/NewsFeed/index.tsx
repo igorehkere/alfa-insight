@@ -4,26 +4,13 @@ import css from './index.module.scss';
 import { Loader } from '../Loader';
 
 export type PreviewStatus = 'risk' | 'opportunity' | 'watch';
-type Tab = 'all' | PreviewStatus;
+type Tab = 'all' | 'high' | 'low';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'all', label: 'Все новости' },
-  { id: 'risk', label: 'Высокий риск' },
-  { id: 'opportunity', label: 'Возможности' },
-  { id: 'watch', label: 'Наблюдать' },
+  { id: 'high', label: 'Высокая релевантность' },
+  { id: 'low', label: 'Низкая релевантность' },
 ];
-
-export function previewStatusForIndex(index: number): PreviewStatus {
-  return (['risk', 'opportunity', 'watch'] as const)[index % 3];
-}
-
-export function previewStatusLabel(status: PreviewStatus): string {
-  return {
-    risk: 'Высокий риск',
-    opportunity: 'Возможность',
-    watch: 'Наблюдать',
-  }[status];
-}
 
 function formatDate(date: string | null): string {
   if (!date) return 'Дата не указана';
@@ -40,8 +27,8 @@ function formatDate(date: string | null): string {
 
 interface NewsFeedProps {
   items: News[];
-  selectedNewsId: number | null;
-  onSelectNews: (id: number) => void;
+  selectedNewsId: string | null;
+  onSelectNews: (newsId: string) => void;
   isLoading: boolean;
   error: string | null;
 }
@@ -56,18 +43,27 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
 
   const filtered = useMemo(() => {
     const term = query.trim().toLocaleLowerCase('ru');
-    return items
-      .map((item, index) => ({ item, status: previewStatusForIndex(index) }))
-      .filter(({ item, status }) => {
-        if (tab !== 'all' && tab !== status) return false;
-        if (source !== 'all' && item.source_name !== source) return false;
-        if (!term) return true;
-        return (
-          item.title.toLocaleLowerCase('ru').includes(term) ||
-          (item.description ?? '').toLocaleLowerCase('ru').includes(term) ||
-          item.source_name.toLocaleLowerCase('ru').includes(term)
-        );
-      });
+
+    return items.filter((item) => {
+      const score = item.relevance_score;
+      if (tab === 'high' && (score === undefined || score < 20)) {
+        return false;
+      }
+      if (tab === 'low' && (score === undefined || score >= 20)) {
+        return false;
+      }
+      if (source !== 'all' && item.source_name !== source) {
+        return false;
+      }
+      if (!term) return true;
+      const reasons = item.relevance_reasons?.map((reason) => reason.reason).join(' ') ?? '';
+
+      return (
+        item.title.toLocaleLowerCase('ru').includes(term) ||
+        item.source_name.toLocaleLowerCase('ru').includes(term) ||
+        reasons.toLocaleLowerCase('ru').includes(term)
+      );
+    });
   }, [items, tab, query, source]);
 
   return (
@@ -130,7 +126,7 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
       <p className={css.foundText}>Найдено {filtered.length} новостей в базе</p>
       <p className={css.demoNote}>Метки риска и возможностей — демонстрационные до подключения AI-агента.</p>
 
-      {isLoading && <Loader type='page'/>}
+      {isLoading && <Loader type="page" />}
       {error && (
         <p role="alert" className={css.error}>
           {error}
@@ -143,7 +139,7 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
       <div className={css.cards}>
         {!isLoading &&
           !error &&
-          filtered.map(({ item, status }) => (
+          filtered.map((item) => (
             <button
               type="button"
               key={item.id}
@@ -152,9 +148,11 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
               aria-pressed={selectedNewsId === item.id}
             >
               <div className={css.cardTop}>
-                <span className={`${css.badge} ${css[status]}`}>
+                <span className={css.badge}>
                   <span className={css.badgeDot} />
-                  {previewStatusLabel(status)}
+                  {typeof item.relevance_score === 'number'
+                    ? `Релевантность: ${Math.round(item.relevance_score)}/100`
+                    : 'Персональная рекомендация'}
                 </span>
                 <time className={css.date} dateTime={item.published_at ?? undefined}>
                   {formatDate(item.published_at)}
@@ -162,11 +160,13 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
               </div>
               <h3 className={css.title}>{item.title}</h3>
               <p className={css.excerpt}>
-                {item.description?.trim() ||
-                  'Описание пока отсутствует. Откройте новость, чтобы перейти к первоисточнику.'}
+                {item.relevance_reasons
+                  ?.map((reason) => reason.reason)
+                  .filter(Boolean)
+                  .join(' ') || 'Подобрано на основе профиля компании.'}
               </p>
               <div className={css.publisher}>
-                <img className={css.brandIcon} src='/images/icon.svg' />
+                <img className={css.brandIcon} src="/images/icon.svg" />
                 <span>{item.source_name}</span>
               </div>
             </button>

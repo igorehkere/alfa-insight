@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { getNews, type News } from '../../api/news';
-import { NewsFeed, previewStatusForIndex } from '../../components/NewsFeed';
+import { NewsFeed } from '../../components/NewsFeed';
 import { NewsDetails } from '../../components/NewsDetails';
 import css from './index.module.scss';
 
@@ -30,41 +30,62 @@ const ROLES: Record<string, string> = {
   analyst: 'Аналитик',
 };
 
-function getSelectedNewsId(value: string | null): number | null {
-  if (!value || !/^\d+$/.test(value)) return null;
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : null;
-}
-
 export const NewsFeedPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const companyId = searchParams.get('company');
   const role = searchParams.get('role');
-  const selectedNewsId = getSelectedNewsId(searchParams.get('news'));
+  const selectedNewsId = searchParams.get('news');
 
   const [news, setNews] = useState<News[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<CompanyProfile | null>(null);
 
+  const previousCompanyId = useRef(companyId);
+
+  useEffect(() => {
+    if (previousCompanyId.current !== companyId) {
+      previousCompanyId.current = companyId;
+
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete('news');
+          return next;
+        },
+        { replace: true }
+      );
+    }
+  }, [companyId, setSearchParams]);
   useEffect(() => {
     const controller = new AbortController();
-    setIsLoading(true);
+    setNews([]);
     setError(null);
-    getNews(controller.signal)
+    if (!companyId) {
+      setIsLoading(false);
+
+      return () => controller.abort();
+    }
+    setIsLoading(true);
+    getNews(companyId, controller.signal)
       .then((response) => {
-        if (!controller.signal.aborted) setNews(response.items);
-      })
-      .catch((caught: unknown) => {
         if (!controller.signal.aborted) {
-          setError(caught instanceof Error ? caught.message : 'Не удалось загрузить новости');
+          setNews(response.items);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(error instanceof Error ? error.message : 'Не удалось загрузить новости');
         }
       })
       .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       });
+
     return () => controller.abort();
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     if (!companyId) {
@@ -96,15 +117,12 @@ export const NewsFeedPage = () => {
     return selected.length > 0 ? selected.join(', ') : 'не указаны';
   }, [company]);
 
-  const selectedStatus = useMemo(() => {
-    const index = news.findIndex((item) => item.id === selectedNewsId);
-    return index >= 0 ? previewStatusForIndex(index) : undefined;
-  }, [news, selectedNewsId]);
-
-  const openNews = (id: number) => {
+  const openNews = (id: string) => {
     setSearchParams((old) => {
       const next = new URLSearchParams(old);
-      next.set('news', String(id));
+
+      next.set('news', id);
+
       return next;
     });
   };
@@ -122,6 +140,8 @@ export const NewsFeedPage = () => {
     const query = params.toString();
     return `/analytics${query ? `?${query}` : ''}`;
   }, [searchParams]);
+
+  const isDetailsOpen = Boolean(selectedNewsId && companyId);
 
   return (
     <div className={css.shell}>
@@ -177,7 +197,7 @@ export const NewsFeedPage = () => {
           </div>
         </header>
 
-        <div className={`${css.workspace} ${selectedNewsId !== null ? css.workspaceOpen : ''}`}>
+        <div className={`${css.workspace} ${isDetailsOpen ? css.workspaceOpen : ''}`}>
           <motion.div
             layout
             className={css.feedColumn}
@@ -193,7 +213,7 @@ export const NewsFeedPage = () => {
           </motion.div>
 
           <AnimatePresence initial={false}>
-            {selectedNewsId !== null && (
+            {isDetailsOpen && (
               <motion.aside
                 key="details-panel"
                 className={css.detailsColumn}
@@ -202,7 +222,16 @@ export const NewsFeedPage = () => {
                 exit={{ x: 95, opacity: 0 }}
                 transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
               >
-                <NewsDetails newsId={selectedNewsId} previewStatus={selectedStatus} onClose={closeNews} />
+                {selectedNewsId && companyId && (
+                  <NewsDetails
+                    key={`${companyId}:${selectedNewsId}`}
+                    newsId={selectedNewsId}
+                    companyId={companyId}
+                    industry={company?.industry ?? null}
+                    products={productNames}
+                    onClose={closeNews}
+                  />
+                )}
               </motion.aside>
             )}
           </AnimatePresence>

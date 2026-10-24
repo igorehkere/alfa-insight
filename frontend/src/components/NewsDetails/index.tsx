@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { InsightResponse } from '../../api/agent-types';
+import { analyzeNews, askQuestion } from '../../api/insights';
 import { getNewsById, type NewsDetails as NewsDetailsData } from '../../api/news';
-import { previewStatusLabel, type PreviewStatus } from '../NewsFeed';
 import css from './index.module.scss';
 import { Loader } from '../Loader';
+import { getAnalysisFactors } from '../../lib/getAnalyticsFactors';
 
 interface NewsDetailsProps {
-  newsId: number;
+  newsId: string;
+  companyId: string;
+  industry: string | null;
+  products: string;
   onClose: () => void;
-  previewStatus?: PreviewStatus;
 }
 
 function formatDateTime(value: string | null): string {
@@ -23,48 +27,143 @@ function formatDateTime(value: string | null): string {
   }).format(date);
 }
 
-// Убрать после появления агента
-const DEMO_RISKS = [
-  'Увеличение стоимости обслуживания кредитов',
-  'Рост финансовых расходов',
-  'Возможная корректировка инвестиционных планов',
-];
-const DEMO_OPPORTUNITIES = [
-  'Пересмотр условий финансирования',
-  'Рост финансовых расходов',
-  'Оптимизация структуры обязательств',
-];
-
-export function NewsDetails({ newsId }: NewsDetailsProps) {
+export function NewsDetails({ newsId, companyId, industry, products }: NewsDetailsProps) {
   const [news, setNews] = useState<NewsDetailsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
+    setChatError(null);
     setNews(null);
     setIsLoading(true);
     setError(null);
-
+    contextVersion.current += 1;
     getNewsById(newsId, controller.signal)
       .then((data) => {
-        if (!controller.signal.aborted) setNews(data);
-      })
-      .catch((caught: unknown) => {
         if (!controller.signal.aborted) {
-          setError(caught instanceof Error ? caught.message : 'Не удалось загрузить новость');
+          setNews(data);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(error instanceof Error ? error.message : 'Не удалось загрузить новость');
         }
       })
       .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      contextVersion.current += 1;
+    };
   }, [newsId]);
+
+  const [analysis, setAnalysis] = useState<InsightResponse | null>(null);
+  const analysisFields = analysis ? analysis.result.why_relevant.flatMap((item) => item.company_fields) : [];
+
+  const analysisFactors = getAnalysisFactors(analysisFields);
+
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  // Номер текущего контекста компании и новости.
+  const contextVersion = useRef(0);
+
+  useEffect(() => {
+    contextVersion.current += 1;
+
+    setAnalysis(null);
+    setAnalysisError(null);
+    setIsAnalyzing(false);
+
+    setChatMessages([]);
+    setQuestion('');
+    setIsAsking(false);
+  }, [companyId, newsId]);
+
+  const handleAnalyze = async () => {
+    if (!companyId || !newsId || isAnalyzing) {
+      return;
+    }
+    const version = contextVersion.current;
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    try {
+      const result = await analyzeNews({
+        company_id: companyId,
+        news_id: newsId,
+        force_refresh: false,
+      });
+      // Не показываем результат старой компании или новости.
+      if (version !== contextVersion.current) {
+        return;
+      }
+      setAnalysis(result);
+    } catch (error) {
+      if (version !== contextVersion.current) {
+        return;
+      }
+      setAnalysisError(error instanceof Error ? error.message : 'Не удалось выполнить анализ');
+    } finally {
+      if (version === contextVersion.current) {
+        setIsAnalyzing(false);
+      }
+    }
+  };
+
+  // Chat
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [question, setQuestion] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [chatMessages, setChatMessages] = useState<
+    Array<{
+      question: string;
+      answer: string;
+      warnings: string[];
+    }>
+  >([]);
+  const handleAsk = async () => {
+    if (!analysis || !question.trim() || isAsking) {
+      return;
+    }
+    const versionAtRequestStart = contextVersion.current;
+    const currentInsightId = analysis.insight_id;
+    const text = question.trim();
+    setIsAsking(true);
+    setChatError(null);
+    try {
+      const response = await askQuestion(currentInsightId, { question: text });
+      if (contextVersion.current !== versionAtRequestStart) {
+        return;
+      }
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          question: text,
+          answer: response.answer,
+          warnings: response.warnings,
+        },
+      ]);
+      setQuestion('');
+    } catch (error) {
+      if (contextVersion.current !== versionAtRequestStart) {
+        return;
+      }
+      setChatError(error instanceof Error ? error.message : 'Не удалось получить ответ агента');
+    } finally {
+      if (contextVersion.current === versionAtRequestStart) {
+        setIsAsking(false);
+      }
+    }
+  };
 
   return (
     <section className={css.details}>
-      {isLoading && <Loader type='page'/>}
+      {isLoading && <Loader type="page" />}
       {error && (
         <div className={css.error} role="alert">
           {error}
@@ -89,51 +188,80 @@ export function NewsDetails({ newsId }: NewsDetailsProps) {
                 news.description?.trim() ||
                 'Текст новости пока отсутствует в базе. Полная публикация доступна по ссылке на первоисточник.'}
             </p>
-            <a href={news.source_url} className={css.sourceButton} target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
-                <path
-                  d="M13 5h6v6m0-6-9 9M19 13v6H5V5h6"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Перейти к первоисточнику
-            </a>
+            {news.source_url && (
+              <a href={news.source_url} className={css.sourceButton} target="_blank" rel="noopener noreferrer">
+                Перейти к первоисточнику
+              </a>
+            )}
           </article>
+          <button
+            type="button"
+            className={css.analyzeButton}
+            onClick={handleAnalyze}
+            disabled={isAnalyzing || analysis !== null}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="m12 3 1.9 6.1L20 11l-6.1 1.9L12 19l-1.9-6.1L4 11l6.1-1.9L12 3Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              />
+              <path d="m19 17 .8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8L19 17Z" fill="currentColor" />
+            </svg>
+
+            <span>{isAnalyzing ? 'Анализируем новость...' : analysis ? 'Анализ выполнен' : 'Анализировать с ИИ'}</span>
+          </button>
+
+          {analysisError && <p role="alert">{analysisError}</p>}
           <section className={css.card}>
             <h3 className={css.sectionTitle}>Почему это важно для вашей компании?</h3>
 
+            {analysis?.result.why_relevant.map((item, index) => (
+              <p key={index} className={css.bodyText}>
+                {item.text}
+              </p>
+            ))}
+            {analysis && (
+              <div className={css.contextBadges}>
+                {industry && (
+                  <span>
+                    <img src="/images/industry_icon.svg" alt="" />
+                    <b>Отрасль:</b> {industry}
+                  </span>
+                )}
 
-            {/* // Изменить после появления агента */}
-            <p className={css.bodyText}> 
-              ПАО «Магнит» работает в сфере розничной торговли и использует кредитные продукты для финансирования
-              оборотного капитала и инвестиционных проектов. Повышение ключевой ставки напрямую увеличит стоимость
-              обслуживания кредитного портфеля и может повлиять на ваши инвестиционные планы.
-            </p>
-            <div className={css.contextBadges}>
-              <span><img src='/images/industry_icon.svg'/> <b>Отрасль:</b> Розничная торговля</span>
-              <span><img src='/images/product_icon.svg'/> <b>Продукты:</b> Кредит, РКО</span>
-              <span><img src='/images/backpack_icon.svg'/> <b>Кредитный портфель:</b> 2,8 млрд ₽</span>
-            </div>
+                {products && products !== 'не указаны' && (
+                  <span>
+                    <img src="/images/product_icon.svg" alt="" />
+                    <b>Продукты:</b> {products}
+                  </span>
+                )}
+
+                {analysisFactors.length > 0 && (
+                  <span>
+                    <span aria-hidden="true">✦</span>
+                    <b>ИИ учитывал:</b> {analysisFactors.join(', ')}
+                  </span>
+                )}
+              </div>
+            )}
           </section>
 
           <div className={css.twoColumns}>
             <section className={css.card}>
               <h3 className={css.sectionTitle}>Риски</h3>
               <ol className={css.numberedList}>
-                {DEMO_RISKS.map((risk) => (
-                  <li key={risk}>{risk}</li>
+                {analysis?.result.risks.map((risk, index) => (
+                  <li key={index}>{risk.text}</li>
                 ))}
               </ol>
             </section>
-            {/* // Изменить после появления агента */}
             <section className={css.card}>
               <h3 className={css.sectionTitle}>Возможности</h3>
               <ol className={css.numberedList}>
-                {DEMO_OPPORTUNITIES.map((opportunity) => (
-                  <li key={opportunity}>{opportunity}</li>
+                {analysis?.result.opportunities.map((item, index) => (
+                  <li key={index}>{item.text}</li>
                 ))}
               </ol>
             </section>
@@ -147,33 +275,159 @@ export function NewsDetails({ newsId }: NewsDetailsProps) {
               AI-анализ на основе данных банка
             </h3>
 
-
-            {/* // Изменить после появления агента */}
             <p className={css.bodyText}>
-              С учётом вашей отрасли и структуры кредитного портфеля, повышение ставки может увеличить расходы на
-              обслуживание кредитов на 12–18% в 2027 году. Рекомендуем Вам рассмотреть возможность рефинансирования
-              части обязательств.
+              {analysis?.result.ai_interpretation ??
+                'Запустите анализ, чтобы получить персональные выводы для вашей компании.'}
             </p>
-            <input
-              className={css.questionInput}
-              type="text"
-              placeholder="Задайте уточняющий вопрос..."
-              aria-label="Уточняющий вопрос (будет доступен после подключения агента)"
-              title="AI-чат будет доступен после подключения агента"
-              disabled
-            />
+
+            {analysis && analysis.result.warnings.length > 0 && (
+              <div className={css.aiWarnings}>
+                {analysis.result.warnings.map((warning, index) => (
+                  <p key={index}>{warning}</p>
+                ))}
+              </div>
+            )}
+
+            {/* История переписки */}
+            {chatMessages.length > 0 && (
+              <div className={css.chatMessages} role="log" aria-live="polite">
+                {chatMessages.map((message, index) => (
+                  <div className={css.chatExchange} key={index}>
+                    {/* Сообщение пользователя */}
+                    <div className={`${css.chatMessage} ${css.chatMessageUser}`}>
+                      <div className={css.chatBubble}>{message.question}</div>
+                    </div>
+
+                    {/* Ответ агента */}
+                    <div className={`${css.chatMessage} ${css.chatMessageAi}`}>
+                      <span className={css.chatAvatar} aria-hidden="true">
+                        ✦
+                      </span>
+
+                      <div className={css.chatAnswer}>
+                        <span className={css.chatName}>AI-ассистент</span>
+
+                        <div className={css.chatBubble}>{message.answer}</div>
+
+                        {message.warnings.length > 0 && (
+                          <div className={css.chatWarnings}>
+                            {message.warnings.map((warning, warningIndex) => (
+                              <p key={warningIndex}>{warning}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <form
+              className={css.chatComposer}
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleAsk();
+              }}
+            >
+              <input
+                className={css.questionInput}
+                type="text"
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                placeholder={analysis ? 'Задайте уточняющий вопрос...' : 'Сначала выполните анализ'}
+                disabled={!analysis || isAsking}
+                maxLength={2000}
+                aria-label="Уточняющий вопрос агенту"
+              />
+
+              <button
+                className={css.chatSendButton}
+                type="submit"
+                disabled={!analysis || !question.trim() || isAsking}
+                aria-label="Отправить сообщение"
+              >
+                {isAsking ? (
+                  <span className={css.sendSpinner} />
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 12 14-7-5 14-2.5-6.5L5 12Z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                    <path d="m11.5 12.5 7.5-7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
+            </form>
           </section>
           <section className={`${css.card} ${css.sourceFooter}`}>
-            <span>Источники и материалы</span>
-            <a
-              href={news.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Открыть источник новости"
-              aria-label="Открыть источник новости"
-            >
-              <img src='images/share_icon.svg'/>
-            </a>
+            <div className={css.sourceBar}>
+              <span className={css.sourceFooterTitle}>Источники и материалы</span>
+
+              <details className={css.sourcesDropdown}>
+                <summary
+                  className={css.sourcesToggle}
+                  aria-label="Показать источники и материалы"
+                  title="Показать источники"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M14 5h5v5M19 5l-9 9M19 13v6H5V5h6"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </summary>
+
+                <div className={css.sourcesMenu}>
+                  <div className={css.sourcesMenuHeader}>
+                    <strong>Источники анализа</strong>
+
+                    <span>{analysis?.result.sources.length ?? 0}</span>
+                  </div>
+
+                  {analysis && analysis.result.sources.length > 0 ? (
+                    <div className={css.sourcesList}>
+                      {analysis.result.sources.map((source, index) => (
+                        <div className={css.sourceItem} key={source.id}>
+                          <span className={css.sourceNumber}>{index + 1}</span>
+
+                          <div className={css.sourceItemContent}>
+                            <span className={css.sourceType}>
+                              {source.type === 'bank' ? 'Документ Альфа-Банка' : 'Новостной источник'}
+                            </span>
+
+                            <strong className={css.sourceItemTitle}>
+                              {source.type === 'bank' ? source.document_title : source.title}
+                            </strong>
+
+                            {source.type === 'bank' && (
+                              <span className={css.sourcePage}>Страница {source.page_number}</span>
+                            )}
+
+                            {source.url && (
+                              <a href={source.url} target="_blank" rel="noopener noreferrer" className={css.sourceLink}>
+                                Открыть источник
+                                <span aria-hidden="true">↗</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={css.sourcesEmpty}>
+                      {analysis ? 'Подтверждённые источники не найдены.' : 'Источники появятся после анализа новости.'}
+                    </p>
+                  )}
+                </div>
+              </details>
+            </div>
           </section>
         </>
       )}
