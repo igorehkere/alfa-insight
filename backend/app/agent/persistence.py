@@ -6,13 +6,12 @@ import json
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Integer, Text, func, select
+from sqlalchemy import DateTime, ForeignKey, Integer, Text, func, inspect, select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.connect import SessionLocal
 from app.models import Company, News
-from app.main import company_profile, counterparties
 from app.agent.errors import InvalidInput, NotFound
 from app.agent.tools import news_from_record
 
@@ -22,7 +21,7 @@ class PersistenceBase(DeclarativeBase):
 
 
 class SavedInsight(PersistenceBase):
-    __tablename__ = "insights"
+    __tablename__ = "dima_agent_insights"
     id: Mapped[str] = mapped_column(Text, primary_key=True)
     cache_key: Mapped[str] = mapped_column(Text, index=True)
     company_id: Mapped[str] = mapped_column(Text, index=True)
@@ -34,9 +33,9 @@ class SavedInsight(PersistenceBase):
 
 
 class SavedMessage(PersistenceBase):
-    __tablename__ = "chat_messages"
+    __tablename__ = "dima_agent_chat_messages"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    insight_id: Mapped[str] = mapped_column(ForeignKey("insights.id"), index=True)
+    insight_id: Mapped[str] = mapped_column(ForeignKey("dima_agent_insights.id"), index=True)
     question: Mapped[str] = mapped_column(Text)
     response: Mapped[dict] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -46,12 +45,14 @@ def serialize_news(row):
     item = news_from_record(row)
     if row.source_name in {"manual_submission", "synthetic_fixture"}:
         item["provenance"] = row.source_name
-    if row.source_url.startswith("https://test.invalid/"):
+    if (row.source_url or "").startswith("https://test.invalid/"):
         item["source_url"] = None
     return item
 
 
 def profile(company_id):
+    # Import on invocation, after Igor's main has finished registering routes.
+    from app.main import company_profile
     with SessionLocal() as session:
         # Reuse Igor's feature extraction, ambiguity handling and payment summary.
         result = company_profile(company_id, session=session)
@@ -59,6 +60,7 @@ def profile(company_id):
 
 
 def payment_links(company_id, *, direction="outgoing", limit=10):
+    from app.main import counterparties
     with SessionLocal() as session:
         return counterparties(company_id, direction=direction, limit=limit, offset=0, session=session)
 
@@ -155,16 +157,21 @@ def counts():
 
 
 def initialize():
-    """Explicit prototype migration; never called on web startup."""
+    """Explicit agent-only migration; never creates Igor's news/company tables."""
     from app.connect import engine
-    News.__table__.create(engine, checkfirst=True)
+    inspector = inspect(engine)
+    for table in PersistenceBase.metadata.sorted_tables:
+        if inspector.has_table(table.name):
+            columns = {column["name"] for column in inspector.get_columns(table.name)}
+            if not set(table.columns.keys()) <= columns:
+                raise InvalidInput(f"Таблица {table.name} имеет несовместимую схему; нужна явная миграция")
     PersistenceBase.metadata.create_all(engine)
 
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Initialize only insights, chat_messages and Igor's news_items")
+    parser = argparse.ArgumentParser(description="Initialize only dima_agent_insights and dima_agent_chat_messages")
     parser.add_argument("command", choices=["init-db"])
     parser.parse_args()
     initialize()
-    print("news_items, insights, chat_messages готовы; корпоративные таблицы не менялись")
+    print("dima_agent_insights и dima_agent_chat_messages готовы")

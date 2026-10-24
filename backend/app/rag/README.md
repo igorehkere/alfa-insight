@@ -1,6 +1,22 @@
-# OCR и гибридный поиск
+# Поиск банковской аналитики и подготовка PDF
 
-Готовая интеграция и Docker с OCR: [Integration_to_igor.md](../../../Integration_to_igor.md).
+Актуальное подключение: [инструкция Игорю](../agent/IGOR_INTEGRATION.md).
+Основной режим по IMPLEMENTATION_PLAN — `RAG_SEARCH_MODE=fts`: PostgreSQL
+Full-Text Search с GIN-индексами `russian`/`simple`, без pgvector и E5.
+Подготовка: `python -m app.rag.cli init-db --store fts`, затем
+`python -m app.rag.cli index-bank --store fts --input backend/app/rag/data/reviewed_corpus.json`.
+CLI читает корневой `.env`, окружение имеет приоритет. Импорт выполняется явно.
+FTS хранит только свои `dima_rag_fts_*` таблицы. Повторный импорт не создаёт дублей.
+Индекс банковских материалов заменяется целиком, новости остаются.
+
+Проверенный корпус: [3 документа, 10 выдержек](data/REVIEWED_CORPUS.md).
+`bank_corpus.json` остаётся маленькой тестовой фикстурой.
+`fts.py` и `records.py` не загружают embedding-модель или NumPy.
+
+## Дополнительный гибридный режим
+
+Прежняя интеграция и Docker с OCR: [Integration_to_igor.md](../../../Integration_to_igor.md).
+Для этого варианта теперь явно задайте `RAG_SEARCH_MODE=hybrid`.
 Рабочий образ — `backend/Dockerfile.prototype`, Compose — `compose.prototype.yml`.
 Тематический фильтр теперь находится в общем `hybrid.py`, поиск свежих SQL-новостей
 и пропуск удалённых записей — в `service_tools.py`. Отладочные адаптеры не нужны.
@@ -19,4 +35,5 @@ OCR можно проверить командой `python -m app.rag.doctor` б
 - `cli.py`: явные команды, без фоновой индексации при запуске сервера.
 - `service_tools.py`: адаптер для существующих функций агента.
 - `search.py`: прежний небольшой лексический поиск для бесплатной офлайн-проверки.
-- `data/bank_corpus.json`: один сверенный абзац; полный OCR-корпус пока нужно подготовить.
+- `data/bank_corpus.json`: один сверенный абзац для регрессионных тестов.
+- `data/reviewed_corpus.json`: рабочая проверенная выборка из трёх документов.

@@ -44,7 +44,7 @@ def news_from_record(record) -> dict:
             "source_url": get("source_url"),
             "published_at": published.isoformat() if hasattr(published, "isoformat") else published,
             "provenance": get("provenance", "rss"),
-            "body_is_summary": not bool(get("body") or get("content"))}
+            "body_is_summary": bool(get("body_is_summary", not bool(get("body") or get("content"))))}
 
 
 def validate_profile(profile: dict, company_id: str) -> dict:
@@ -120,19 +120,27 @@ class ServiceTools:
         self.profile_loader, self.news_loader = profile_loader, news_loader
         self.news_lister, self.bank_searcher = news_lister, bank_searcher
         self.counterparties_loader = counterparties_loader
+        self._profile = None
+        self._news = {}
 
     async def get_company_profile(self, company_id):
         if company_id != self.company_id:
             raise InvalidInput("Компания не входит в разрешённый контекст")
-        return validate_profile(await self.profile_loader(company_id), company_id)
+        if self._profile is None:
+            self._profile = validate_profile(await self.profile_loader(company_id), company_id)
+        return copy.deepcopy(self._profile)
 
     async def get_news(self, news_id):
+        if news_id in self._news:
+            return copy.deepcopy(self._news[news_id])
         record = await self.news_loader(news_id)
         if record is None:
             raise NotFound("Новость не найдена")
         item = news_from_record(record)
         if item["id"] != news_id:
             raise InvalidInput("Адаптер вернул другую новость")
+        # Cache keys and the generated analysis must use the same input snapshot.
+        self._news[news_id] = copy.deepcopy(item)
         return item
 
     async def list_news(self, limit=200):

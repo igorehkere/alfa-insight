@@ -9,31 +9,52 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["download-model", "init-db", "index-bank", "index-news", "index-db-news", "search"])
-    parser.add_argument("--store", choices=["json", "postgres"], default="json")
+    parser.add_argument("--store", choices=["json", "postgres", "fts"], default="json")
     parser.add_argument("--index", type=Path, default=Path(".dima-data/vector-index.json"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--query")
     parser.add_argument("--kind", choices=["bank", "news"], default="bank")
     parser.add_argument("--as-of", type=date.fromisoformat, default=date.today())
     args = parser.parse_args()
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parents[3] / ".env")
+    dsn = os.getenv("RAG_DATABASE_URL") or os.getenv("DATABASE_URL")
     if args.command == "init-db":
-        from app.rag.postgres import PgVectorStore
-        PgVectorStore.initialize(os.environ["RAG_DATABASE_URL"])
-        print("Созданы только dima_rag_* и расширение vector")
+        if not dsn:
+            parser.error("Нужен RAG_DATABASE_URL или DATABASE_URL в окружении")
+        if args.store == "fts":
+            from app.rag.fts import PgFTSStore
+            PgFTSStore.initialize(dsn)
+            print("Созданы только dima_rag_fts_*; embedding-модель не нужна")
+        else:
+            from app.rag.postgres import PgVectorStore
+            PgVectorStore.initialize(dsn)
+            print("Созданы только dima_rag_* и расширение vector")
         return
     if args.command == "download-model":
         os.environ["RAG_LOCAL_FILES_ONLY"] = "0"  # Only this explicit command may download.
-    from app.rag.embeddings import get_encoder
-    encoder = get_encoder()
+    if args.store == "fts" and args.command != "download-model":
+        from app.rag.records import TextSplitter
+        encoder = TextSplitter()
+    else:
+        from app.rag.embeddings import get_encoder
+        encoder = get_encoder()
     if args.command == "download-model":
         print(encoder.identity)
         return
     if args.store == "json":
         from app.rag.json_store import JsonVectorStore
         store = JsonVectorStore(args.index, encoder)
+    elif args.store == "fts":
+        if not dsn:
+            parser.error("Нужен RAG_DATABASE_URL или DATABASE_URL в окружении")
+        from app.rag.fts import PgFTSStore
+        store = PgFTSStore(dsn)
     else:
         from app.rag.postgres import PgVectorStore
-        store = PgVectorStore(os.environ["RAG_DATABASE_URL"], encoder)
+        if not dsn:
+            parser.error("Нужен RAG_DATABASE_URL или DATABASE_URL в окружении")
+        store = PgVectorStore(dsn, encoder)
     if args.command == "search":
         if not args.query:
             parser.error("Нужен --query")
@@ -41,7 +62,7 @@ def main():
         return
     if args.command == "index-db-news":
         from app.agent.persistence import list_news
-        from app.rag.index import news_records
+        from app.rag.records import news_records
         items = list_news(limit=200)
         dated = [item for item in items if item.get("published_at")]
         count = store.upsert(news_records(dated, encoder), kind="news", parent_ids={item["id"] for item in dated})
@@ -51,11 +72,11 @@ def main():
         parser.error("Нужен --input")
     if args.command == "index-bank":
         from app.rag.search import read_corpus
-        from app.rag.index import bank_records
+        from app.rag.records import bank_records
         rows = bank_records(read_corpus(args.input), encoder)
         count = store.upsert(rows, kind="bank")
     else:
-        from app.rag.index import news_records
+        from app.rag.records import news_records
         data = json.loads(args.input.read_text(encoding="utf-8"))
         if isinstance(data, dict):
             data = data.get("news", data.get("items"))
@@ -63,7 +84,8 @@ def main():
             parser.error("Нужен список новостей или JSON с news/items")
         rows = news_records(data, encoder)
         count = store.upsert(rows, kind="news", parent_ids={str(n["id"]) for n in data})
-    print(json.dumps({"indexed": count, "version": store.version, "model": encoder.identity}))
+    print(json.dumps({"indexed": count, "version": store.version,
+                      "model": getattr(encoder, "identity", None)}))
 
 
 if __name__ == "__main__":

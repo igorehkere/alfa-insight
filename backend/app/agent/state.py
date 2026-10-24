@@ -14,7 +14,7 @@ class Plan(BaseModel):
 
 class AgentLimits(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
-    max_tool_calls: int = Field(default=8, ge=3, le=12)
+    max_tool_calls: int = Field(default=7, ge=3, le=12)
     max_llm_calls: int = Field(default=4, ge=2, le=4)
     deadline_seconds: float = Field(default=90, gt=0, le=180)
     plan_tokens: int = Field(default=2000, ge=100, le=4000)
