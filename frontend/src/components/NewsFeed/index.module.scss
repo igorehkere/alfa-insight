@@ -1,0 +1,289 @@
+.feed {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 17px 19px 24px;
+  border: 1px solid #dedfe3;
+  border-radius: 17px;
+  background: #fff;
+  color: #202731;
+  scrollbar-width: thin;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 17px;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tab {
+  flex: 0 0 auto;
+  position: relative;
+  appearance: none;
+  border: 0;
+  padding: 6px 0 9px;
+  background: transparent;
+  font: inherit;
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9da5b2;
+  cursor: pointer;
+}
+.tabActive {
+  color: #1f2731;
+  font-weight: 650;
+}
+.tabActive::after {
+  position: absolute;
+  content: '';
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: #ef3124;
+}
+.searchRow {
+  display: flex;
+  gap: 9px;
+  margin-bottom: 17px;
+}
+.searchBox {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  border: 1px solid #bcc7d3;
+  border-radius: 9px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  color: #b2bdca;
+}
+.searchBox:focus-within {
+  border-color: #ef3124;
+}
+.searchBox input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #25303c;
+  font: inherit;
+  font-size: 12px;
+  font-family: 'Inter Variable', sans-serif;
+}
+.searchBox input::placeholder {
+  color: #aeb7c3;
+}
+.filterButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 102px;
+  height: 36px;
+  box-sizing: border-box;
+  border: 1px solid #bfc9d6;
+  border-radius: 9px;
+  background: white;
+  color: #9099a7;
+  font: inherit;
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
+.filterButton:hover,
+.filterButtonActive {
+  border-color: #ef3124;
+  color: #ef3124;
+}
+.sourceFilter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: -5px 0 12px;
+  font-size: 12px;
+  font-family: 'Inter Variable', sans-serif;
+  color: #6c7480;
+}
+.sourceFilter select {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #d3d7df;
+  border-radius: 6px;
+  padding: 5px;
+  background: white;
+  font: inherit;
+}
+.foundText {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: #9da8b5;
+  font-family: 'Inter Variable', sans-serif;
+}
+.demoNote {
+  margin: 0 0 12px;
+  font-size: 10px;
+  line-height: 1.3;
+  color: #98a1ac;
+  font-family: 'Inter Variable', sans-serif;
+}
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.card {
+  display: block;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid #dedfe1;
+  border-radius: 10px;
+  background: white;
+  color: inherit;
+  font: inherit;
+  font-family: 'Inter Variable', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.card:hover {
+  border-color: #f4b7b6;
+  box-shadow: 0 3px 12px rgba(24, 32, 46, 0.05);
+}
+.cardSelected {
+  border-color: #ffccc9;
+  background: #fff9f9;
+}
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: 'Inter Variable', sans-serif;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.risk {
+  color: #f14449;
+  background: #ffebed;
+}
+.opportunity {
+  color: #1fae99;
+  background: #dff8f4;
+}
+.watch {
+  color: #eaa400;
+  background: #fff5dc;
+}
+.date {
+  color: #a4abb7;
+  font-size: 10px;
+  font-family: 'Inter Variable', sans-serif;
+  text-align: right;
+}
+.title {
+  margin: 0 0 9px;
+  color: #25303b;
+  font-weight: 700;
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.excerpt {
+  display: -webkit-box;
+  margin: 0 0 11px;
+  max-height: 47px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  color: #606a76;
+  font-size: 11px;
+  font-family: 'Inter Variable', sans-serif;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.publisher {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #7d8793;
+  font-size: 10px;
+  font-family: 'Inter Variable', sans-serif;
+}
+.brandIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background: #f03027;
+  color: #fff;
+  border-radius: 2px;
+  font-weight: 750;
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 12px;
+}
+.stateMessage {
+  padding: 20px 0;
+  font-size: 13px;
+  color: #727b87;
+}
+.error {
+  padding: 12px;
+  border-radius: 8px;
+  color: #a52425;
+  background: #fff0f0;
+  font-size: 12px;
+  font-family: 'Inter Variable', sans-serif;
+}
+
+@media (max-width: 560px) {
+  .feed {
+    padding: 14px 12px 18px;
+  }
+  .tabs {
+    gap: 14px;
+  }
+  .tab {
+    font-size: 11px;
+  }
+  .card {
+    padding: 13px;
+  }
+  .cardTop {
+    flex-wrap: wrap;
+  }
+}
