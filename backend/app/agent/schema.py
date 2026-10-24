@@ -13,13 +13,13 @@ class AgentSchema(BaseModel):
 
 
 class AnalyzeRequest(AgentSchema):
-    company_id: NonEmptyText
-    news_id: NonEmptyText
+    company_id: NonEmptyText = Field(max_length=100)
+    news_id: NonEmptyText = Field(max_length=100)
     force_refresh: bool = False
 
 
 class AskRequest(AgentSchema):
-    question: NonEmptyText
+    question: NonEmptyText = Field(max_length=2000)
 
 
 class NewsSource(AgentSchema):

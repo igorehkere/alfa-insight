@@ -271,8 +271,9 @@ class PipelineTests(unittest.IsolatedAsyncioTestCase):
             if stage == "ask":
                 value["source_ids"] = ["missing"]
         self.tools.llm = MutatingLLM(mutate)
-        with self.assertRaises(EvidenceError):
-            await app.ask(public["insight_id"], "Вопрос")
+        response = await app.ask(public["insight_id"], "Вопрос")
+        self.assertEqual(response["source_ids"], [])
+        self.assertTrue(any("резервный" in warning for warning in response["warnings"]))
 
 
 class RetrievalTests(unittest.TestCase):

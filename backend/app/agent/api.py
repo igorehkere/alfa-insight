@@ -38,6 +38,7 @@ class ManualNews(BaseModel):
 
 
 def install_error_handlers(app):
+    existing = dict(app.exception_handlers)
     @app.exception_handler(AgentError)
     async def agent_error(request, exc):
         return JSONResponse(status_code=exc.status_code, content={"detail": str(exc)})
@@ -48,10 +49,15 @@ def install_error_handlers(app):
         return JSONResponse(status_code=409 if isinstance(exc, IntegrityError) else 503,
                             content={"detail": "Конфликт записи" if isinstance(exc, IntegrityError) else "БД недоступна или не подготовлена"})
 
+    # Respect exception policies already installed by the host backend.
+    app.exception_handlers.update(existing)
 
-def create_router(*, include_news=True):
+
+def create_router(*, include_news=True, include_feed=None):
     """Use app.state.agent_runtime (AgentRuntime), app.state.agent_limits (optional)."""
     router = APIRouter(responses={code: {"model": ErrorResponse} for code in (404, 409, 503)})
+    if include_feed is None:
+        include_feed = include_news
 
     @router.post("/api/insights/analyze", response_model=InsightResponse, tags=["Агент"])
     async def analyze(payload: AnalyzeRequest, request: Request):
@@ -59,20 +65,25 @@ def create_router(*, include_news=True):
         limits = getattr(request.app.state, "agent_limits", AgentLimits())
         if runtime.llm is None:
             raise AgentUnavailable("Проверьте LLM_* в окружении backend")
-        async with runtime.analysis_lock:
-            tools = await runtime.tools(payload.company_id)
-            key = await runtime.cache_key(payload.company_id, payload.news_id, tools)
-            if not payload.force_refresh:
-                cached = await asyncio.to_thread(runtime.repository.cached, key)
-                if cached:
-                    return cached
-            run = await run_analysis(payload.company_id, payload.news_id, tools, limits=limits)
-            return await asyncio.to_thread(runtime.repository.save_run, key, payload.company_id, payload.news_id, run)
+        try:
+            # Includes the queue, RAG initialization, loading and cache lookup.
+            async with asyncio.timeout(limits.deadline_seconds):
+                async with runtime.analysis_lock:
+                    tools = await runtime.tools(payload.company_id)
+                    key = await runtime.cache_key(payload.company_id, payload.news_id, tools)
+                    if not payload.force_refresh:
+                        cached = await asyncio.to_thread(runtime.repository.cached, key)
+                        if cached:
+                            return cached
+                    run = await run_analysis(payload.company_id, payload.news_id, tools, limits=limits)
+                    return await asyncio.to_thread(runtime.repository.save_run, key, payload.company_id, payload.news_id, run)
+        except TimeoutError:
+            raise AgentUnavailable("Истекло общее время подготовки анализа") from None
 
     @router.get("/api/insights/{insight_id}", response_model=InsightResponse, tags=["Агент"])
     async def insight(insight_id: str, request: Request):
         saved = await asyncio.to_thread(request.app.state.agent_runtime.repository.load_insight, insight_id)
-        return {key: value for key, value in saved.items() if key != "context"}
+        return {key: value for key, value in saved.items() if key in InsightResponse.model_fields}
 
     @router.post("/api/insights/{insight_id}/ask", response_model=AnswerResponse, tags=["Агент"])
     async def ask(insight_id: str, payload: AskRequest, request: Request):
@@ -95,14 +106,16 @@ def create_router(*, include_news=True):
     async def history(insight_id: str, request: Request):
         return {"items": await asyncio.to_thread(request.app.state.agent_runtime.repository.messages, insight_id)}
 
+    if include_feed:
+        @router.get("/api/news", tags=["Новости"])
+        async def feed(request: Request, company_id: str = Query(min_length=1, max_length=100), limit: int = Query(10, ge=1, le=100)):
+            runtime = request.app.state.agent_runtime
+            return await recommend_news(company_id, runtime.feed_tools(company_id), limit)
+
     if include_news:
         @router.get("/api/news/catalog", tags=["Новости"])
         async def catalog(request: Request, limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0)):
             return {"items": await asyncio.to_thread(request.app.state.agent_runtime.repository.list_news, limit=limit, offset=offset)}
-
-        @router.get("/api/news", tags=["Новости"])
-        async def feed(request: Request, company_id: str = Query(min_length=1, max_length=100), limit: int = Query(10, ge=1, le=100)):
-            return await recommend_news(company_id, await request.app.state.agent_runtime.tools(company_id), limit)
 
         @router.post("/api/news/manual", status_code=201, tags=["Новости"])
         async def manual(payload: ManualNews, request: Request):

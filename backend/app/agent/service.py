@@ -110,6 +110,10 @@ async def execute_plan(plan, state, tools, limits, as_of):
             raise EvidenceError("План содержит недопустимый поисковый запрос")
         if query in state.queries:
             continue
+        if state.tool_calls >= limits.max_tool_calls:
+            state.record("verify", "Лимит поиска исчерпан; используем только полученные доказательства",
+                         status="insufficient_evidence")
+            break
         state.queries.append(query)
         rows = await tool_call(state, limits, "search_bank_analytics",
                                lambda: tools.search_bank_analytics(query, 5, as_of=as_of))

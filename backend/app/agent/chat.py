@@ -83,7 +83,7 @@ async def answer_question(insight, question, tools, *, history=None, turn_count=
     try:
         question = AskRequest(question=question).question
     except ValidationError:
-        raise InvalidInput("Вопрос не должен быть пустым") from None
+        raise InvalidInput("Вопрос должен содержать от 1 до 2000 символов") from None
     if len(question) > 2000:
         raise InvalidInput("Вопрос длиннее 2000 символов")
     saved = insight.get("context")

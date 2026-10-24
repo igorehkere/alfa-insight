@@ -60,7 +60,8 @@ class JsonApplication:
     async def ask(self, insight_id: str, question: str):
         async with self._locks.setdefault(insight_id, asyncio.Lock()):
             envelope = self.load(insight_id)
-            response = await answer_question({**envelope["public"], "context": envelope["context"]}, question, self.tools)
+            response = await answer_question({**envelope["public"], "context": envelope["context"]}, question, self.tools,
+                                             history=envelope["chat"])
             envelope["chat"].append({"question": question, "response": response})
             atomic_json(self._path(insight_id), envelope)
             return response

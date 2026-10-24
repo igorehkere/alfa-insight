@@ -1,0 +1,13 @@
+# Dima's MVP dependencies; merge with the backend's existing dependencies.
+# PostgreSQL FTS needs neither sentence-transformers nor torch nor pgvector.
+fastapi==0.155.0
+uvicorn==0.54.0
+SQLAlchemy==2.1.6
+psycopg==3.3.6
+pydantic==2.14.1
+pydantic-settings>=2.12.0,<3.0
+python-dotenv==1.2.4
+httpx>=0.28.1,<1.0
+openai>=2.0.0,<3.0
+langgraph==1.2.16
+PyMuPDF==1.28.2

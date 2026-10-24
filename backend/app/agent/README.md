@@ -1,6 +1,13 @@
 # Агент, LangGraph и офлайн-проверка
 
-Финальная инструкция: [Integration_to_igor.md](../../../Integration_to_igor.md).
+Актуальное подключение к единому main: [IGOR_INTEGRATION.md](IGOR_INTEGRATION.md).
+`install_agent(app)` сохраняет приложение Игоря и добавляет insights/чат/trace
+и персональную ленту. Хранение — в собственных `dima_agent_*` таблицах.
+По умолчанию используется PostgreSQL FTS без embedding-модели; прежний hybrid
+включается явно через `RAG_SEARCH_MODE=hybrid`. Лента не требует RAG/LLM.
+Зависимости MVP: [requirements-mvp.txt](requirements-mvp.txt).
+
+Старая инструкция прототипа: [Integration_to_igor.md](../../../Integration_to_igor.md).
 Готовый сервер: `uvicorn app.agent.api:create_app --factory` (PYTHONPATH=backend).
 Рабочая логика больше не находится в `app.test`: `LLMClient` включает failover
 и JSON-протокол, `service.answer_question` — короткий чат с явным общим ответом
