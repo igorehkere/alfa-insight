@@ -25,7 +25,7 @@ class EmbeddingSettings:
     def from_env(cls):
         return cls(revision=os.getenv("RAG_EMBEDDING_REVISION", DEFAULT_REVISION),
                    cache_dir=os.getenv("RAG_MODEL_CACHE"),
-                   local_files_only=os.getenv("RAG_LOCAL_FILES_ONLY", "0") == "1",
+                   local_files_only=os.getenv("RAG_LOCAL_FILES_ONLY", "1") == "1",
                    batch_size=int(os.getenv("RAG_BATCH_SIZE", "8")),
                    threads=int(os.getenv("RAG_CPU_THREADS", "2")))
 

@@ -4,3 +4,12 @@
 create_user_db.txt
 __pycache__
 notes.md
+.env.prototype
+
+# Local debug server and frontend
+/backend/app/test/
+/tests/
+
+# Local regression checks
+/backend/app/agent/tests/test_chat_context.py
+/backend/app/agent/tests/test_llm_failover.py

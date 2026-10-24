@@ -3,6 +3,8 @@ import asyncio
 from datetime import date
 
 from app.agent.tools import ServiceTools
+from app.agent.errors import NotFound
+from app.rag.hybrid import validate_query
 
 
 class HybridServiceTools(ServiceTools):
@@ -28,7 +30,12 @@ class HybridServiceTools(ServiceTools):
         if not query:
             return recent
         rows = await asyncio.to_thread(self.store.search, query, 10, kind="news", as_of=date.today())
-        candidates = [await self.get_news(row["news_id"]) for row in rows]
+        candidates = []
+        for row in rows:
+            try:
+                candidates.append(await self.get_news(row["news_id"]))
+            except NotFound:
+                continue  # A deleted indexed record must not break the entire feed.
         seen, result = set(), []
         for item in candidates + recent:
             if item["id"] not in seen:
@@ -37,6 +44,20 @@ class HybridServiceTools(ServiceTools):
         return result[:limit]
 
     async def search_related_news(self, query, limit=3):
+        validate_query(query, limit)
         rows = await asyncio.to_thread(self.store.search, query, limit, kind="news", as_of=date.today())
         # Reload primary records: search excerpts are not substituted for article bodies.
-        return [await self.get_news(row["news_id"]) for row in rows]
+        result, seen = [], set()
+        for row in rows:
+            try:
+                item = await self.get_news(row["news_id"])
+            except NotFound:
+                continue
+            if item["id"] not in seen:
+                seen.add(item["id"])
+                result.append(item)
+        for item in await super().search_related_news(query, limit):
+            if item["id"] not in seen:
+                seen.add(item["id"])
+                result.append(item)
+        return result[:limit]

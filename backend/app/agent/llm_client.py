@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from collections import deque
+import logging
 from time import perf_counter
 from types import TracebackType
 from typing import Self
@@ -9,18 +11,14 @@ from openai import APIConnectionError, APIError, APIStatusError, APITimeoutError
 from openai.types.chat import ChatCompletionMessageParam
 
 from app.agent.config import LLMSettings, resolve_model
+from app.agent.errors import LLMError
+from app.agent.llm_protocol import CompletionAdapter, POLICY_VERSION
 from app.agent.schema import LLMReply, TokenUsage
 
-
-class LLMError(RuntimeError):
-    """Safe provider error for logging or returning from an API handler"""
-
-    def __init__(self, message: str, *, status_code: int | None = None) -> None:
-        super().__init__(message)
-        self.status_code = status_code
+logger = logging.getLogger(__name__)
 
 
-class LLMClient:
+class _SingleEndpointClient:
     """Reuse one client in a FastAPI lifespan or an async context manager.
 
     No automatic retries; each completion makes at most one API attempt.
@@ -117,3 +115,61 @@ class LLMClient:
         if not prompt.strip():
             raise ValueError("Текст запроса не должен быть пустым")
         return await self.complete([{"role": "user", "content": prompt}], model=model)
+
+
+def unavailable(error: LLMError) -> bool:
+    # The shared client deliberately hides raw SDK errors. These two public
+    # messages represent only timeout/connection failures; malformed replies do not.
+    diagnostics = getattr(error, "diagnostics", {})
+    empty_final = diagnostics.get("finish_reason") == "stop" and diagnostics.get("content_characters") == 0
+    return (empty_final or error.status_code == 408
+            or (error.status_code is not None and 500 <= error.status_code <= 599)
+            or (error.status_code is None and str(error) in {
+                "Истекло время ожидания LLM", "Не удалось подключиться к API LLM"}))
+
+
+class LLMClient(_SingleEndpointClient):
+    def __init__(self, settings: LLMSettings | None = None):
+        settings = settings if settings is not None else LLMSettings.from_env()
+        super().__init__(settings)
+        self.diagnostics = deque(maxlen=50)
+        self._client = CompletionAdapter(self._client, settings, "primary", self._record)
+        self._fallback = None
+        self._use_fallback = False
+        if settings.fallback_base_url and str(settings.fallback_base_url).rstrip("/") != str(settings.base_url).rstrip("/"):
+            self._fallback = _SingleEndpointClient(settings.model_copy(update={"base_url": settings.fallback_base_url}))
+            self._fallback._client = CompletionAdapter(self._fallback._client, settings, "fallback", self._record)
+
+    def _record(self, metrics):
+        self.diagnostics.append(metrics)
+        logger.info("LLM response metrics: %s", metrics)
+
+    @property
+    def cache_identity(self):
+        return f"{super().cache_identity}:{POLICY_VERSION}:{self.settings.reasoning_effort}:{self.settings.json_mode}"
+
+    @property
+    def active_endpoint(self):
+        return "fallback" if self._use_fallback else "primary"
+
+    async def complete(self, messages, *, model=None, max_tokens=None):
+        if self._use_fallback:
+            return await self._fallback.complete(messages, model=model, max_tokens=max_tokens)
+        try:
+            return await super().complete(messages, model=model, max_tokens=max_tokens)
+        except LLMError as exc:
+            if self._fallback is None or not unavailable(exc):
+                raise
+        logger.warning("Основной LLM endpoint недоступен; запрос направлен на резервный")
+        # One extra attempt with the same approved model, key, messages and limits.
+        # A successful switch persists until the client/server is restarted.
+        reply = await self._fallback.complete(messages, model=model, max_tokens=max_tokens)
+        self._use_fallback = True
+        return reply
+
+    async def aclose(self):
+        try:
+            await super().aclose()
+        finally:
+            if self._fallback is not None:
+                await self._fallback.aclose()

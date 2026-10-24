@@ -8,7 +8,7 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["download-model", "init-db", "index-bank", "index-news", "search"])
+    parser.add_argument("command", choices=["download-model", "init-db", "index-bank", "index-news", "index-db-news", "search"])
     parser.add_argument("--store", choices=["json", "postgres"], default="json")
     parser.add_argument("--index", type=Path, default=Path(".dima-data/vector-index.json"))
     parser.add_argument("--input", type=Path)
@@ -21,6 +21,8 @@ def main():
         PgVectorStore.initialize(os.environ["RAG_DATABASE_URL"])
         print("Созданы только dima_rag_* и расширение vector")
         return
+    if args.command == "download-model":
+        os.environ["RAG_LOCAL_FILES_ONLY"] = "0"  # Only this explicit command may download.
     from app.rag.embeddings import get_encoder
     encoder = get_encoder()
     if args.command == "download-model":
@@ -36,6 +38,14 @@ def main():
         if not args.query:
             parser.error("Нужен --query")
         print(json.dumps(store.search(args.query, kind=args.kind, as_of=args.as_of), ensure_ascii=False, indent=2))
+        return
+    if args.command == "index-db-news":
+        from app.agent.persistence import list_news
+        from app.rag.index import news_records
+        items = list_news(limit=200)
+        dated = [item for item in items if item.get("published_at")]
+        count = store.upsert(news_records(dated, encoder), kind="news", parent_ids={item["id"] for item in dated})
+        print(json.dumps({"indexed": count, "skipped_undated": len(items) - len(dated), "version": store.version}))
         return
     if not args.input:
         parser.error("Нужен --input")
