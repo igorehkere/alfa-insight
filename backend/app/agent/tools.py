@@ -39,6 +39,7 @@ def news_from_record(record) -> dict:
         raise InvalidInput("Текст новости должен быть строкой")
     published = get("published_at")
     return {"id": str(identifier), "title": title, "body": body[:24000],
+            "summary": str(get("summary") or get("description") or "")[:1200],
             "topic_tags": sorted(topics(title + " " + body)),
             "source": get("source") or get("source_name") or "unknown",
             "source_url": get("source_url"),

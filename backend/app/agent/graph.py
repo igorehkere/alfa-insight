@@ -19,7 +19,7 @@ from app.agent.service import (compact_profile, complete_json, event_date, execu
 from app.agent.state import AgentLimits, AgentState, Plan
 from app.agent.tools import validate_profile
 from app.agent.verifier import verify_result
-from app.agent.relevance import RelevanceEngine, normalize_assessment
+from app.agent.relevance import RelevanceEngine, news_brief, no_relevance, normalize_assessment
 
 
 @dataclass
@@ -66,7 +66,7 @@ async def load_company_and_news(data: Workflow, runtime: Runtime[GraphContext]):
 async def plan_analysis(data: Workflow, runtime: Runtime[GraphContext]):
     state = data["agent"]
     stage = "replan" if data.get("replans", 0) else "plan"
-    payload = {"profile": state.profile, "news": state.news, "warnings": state.warnings,
+    payload = {"profile": state.profile, "news": news_brief(state.news), "warnings": state.warnings,
                "business_context": state.business_context,
                "event_relevance": state.event_relevance,
                "previous_queries": state.queries,
@@ -83,13 +83,16 @@ async def plan_analysis(data: Workflow, runtime: Runtime[GraphContext]):
         plan = Plan(search_queries=[query])
         state.warnings.append('Модель не оформила план поиска; материалы подбираются по заголовку выбранной новости.')
         state.record('verify', 'Использован поиск по теме новости после ошибки формата плана', status='insufficient_evidence')
-    if plan.relevance is not None:
-        assessed = normalize_assessment(plan.relevance, state.business_context['facts'], state.news)
-        state.event_relevance = assessed or {"level": "none", "fields": [], "quote": "", "event": "",
-                                           "affected": "", "mechanism": "", "conditions": []}
-        if state.event_relevance['level'] == 'none':
-            plan.need_counterparties = False
-            plan.related_news_query = None
+    if plan.relevance is not None and state.event_relevance is None:
+        assessed = normalize_assessment(plan.relevance, state.business_context['facts'], news_brief(state.news))
+        if assessed is not None or plan.relevance.level == 'none':
+            state.event_relevance = assessed or no_relevance()
+            engine = getattr(runtime.context.tools, 'relevance_engine', None)
+            if engine is not None:
+                engine.remember_assessment(state.business_context, state.news, assessed)
+    if (state.event_relevance or {}).get('level') == 'none':
+        plan.need_counterparties = False
+        plan.related_news_query = None
     state.record("plan", f"Подготовлен план поиска; банковских запросов: {len(plan.search_queries)}")
     return {"plan": plan}
 
@@ -101,6 +104,9 @@ async def describe_company(data: Workflow, runtime: Runtime[GraphContext]):
         return await complete_json(tools, state, limits, 'company_profile', payload, model)
     state.business_context = await engine.company_context(
         state.profile, generate=generate, allow_llm=limits.max_llm_calls >= 3)
+    cached = engine.cached_assessments(state.business_context, [state.news])
+    if state.news_id in cached:
+        state.event_relevance = cached[state.news_id] or no_relevance()
     state.record('plan', 'Отделены сведения компании от отраслевых предположений; подготовлен контекст влияния событий')
     if engine.enabled and not state.business_context['inferred']:
         state.warnings.append('Развёрнутый профиль компании недоступен; используются только исходные сведения.')
@@ -163,10 +169,22 @@ async def refine_search(data: Workflow):
 async def generate_analysis(data: Workflow, runtime: Runtime[GraphContext]):
     state, tools = data["agent"], runtime.context.tools
     context = make_context(state, tools, event_date(state.news))
+    from app.agent.chat import evidence_excerpt
+    # Keep original evidence for verification and saved chat context; send short
+    # exact excerpts alongside the summary rather than duplicating full articles.
+    evidence = {}
+    anchor = (state.event_relevance or {}).get('quote', '')
+    for sid, item in context['evidence'].items():
+        if item['source']['type'] == 'news':
+            text = evidence_excerpt(item['text'], anchors=(anchor,), budget=1800) or item['text'][:1200]
+            evidence[sid] = {**item, 'text': text}
+        else:
+            evidence[sid] = item
     try:
         result = await complete_json(tools, state, runtime.context.limits,
             "repair" if data.get("repairs", 0) else "analyze",
-            {**context, "warnings": state.warnings, "verification_error": data.get("error"),
+            {**context, "news": news_brief(state.news), "evidence": evidence,
+             "warnings": state.warnings, "verification_error": data.get("error"),
              "schema_errors": data.get('schema_errors', [])}, InsightResult)
         state.record("execute", "Получен структурированный анализ; проверяем доказательства")
         return {"context": context, "result": result, "error": None, 'schema_errors': []}
@@ -205,6 +223,7 @@ async def finish(data: Workflow):
     result.warnings = compact_warnings([*result.warnings, *state.warnings])
     if result.bank_position.status == "not_found":
         result.warnings.append("Подтверждённая позиция банка по этому событию не найдена.")
+        result.warnings.append("Качественная оценка AI по новости и профилю компании: точный размер влияния не определён; это не позиция Альфа-Банка.")
     available = [item for item in state.evidence.values() if item['source']['type'] == 'bank']
     used_ids = {source.id for source in result.sources}
     for item in available:

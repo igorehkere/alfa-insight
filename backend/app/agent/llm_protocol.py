@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from app.agent.errors import LLMError
 from app.agent.errors import EvidenceError
 
-POLICY_VERSION = "company-event-v7"
+POLICY_VERSION = "company-event-v8"
 STAGES = {"company_profile", "news_relevance", "plan", "replan", "analyze", "repair", "ask"}
 
 

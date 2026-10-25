@@ -178,9 +178,13 @@ async def tool_call(state, limits, name, operation):
 
 
 def make_context(state, tools, as_of):
+    current_bank = any(item['source']['type'] == 'bank' and item.get('eligible_for_current_position', True)
+                       for item in state.evidence.values())
     return {"company_id": state.company_id, "news_id": state.news_id,
             "profile": state.profile, "news": state.news, "evidence": state.evidence,
             "business_context": state.business_context, "event_relevance": state.event_relevance,
+            "analysis_policy": {"mode": "bank_supported" if current_bank else "qualitative",
+                                "require_impacts": not getattr(tools.llm, 'offline', False)},
             "as_of": as_of.isoformat(), "search_queries": list(state.queries), "prompt_version": PROMPT_VERSION,
             "corpus_version": tools.corpus_version}
 

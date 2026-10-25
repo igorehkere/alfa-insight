@@ -69,7 +69,40 @@ def verify_result(result: InsightResult, context: dict) -> None:
         if not numbers(item.text) <= numbers(support):
             raise EvidenceError("Числа в риске или возможности не подтверждены источниками")
     bank = result.bank_position
+    policy = context.get('analysis_policy') or {}
+    qualitative = policy.get('mode') == 'qualitative' or bank.status == 'not_found'
+    if qualitative:
+        texts = [result.ai_interpretation, *result.suggested_actions,
+                 *[item.text for item in [*result.why_relevant, *result.risks, *result.opportunities]]]
+        for index, text in enumerate(texts):
+            if index == 0:
+                # Exact, dated bank quotations are background facts, not a numeric
+                # estimate of the effect on this company. Their dates are checked below.
+                for item in registry.values():
+                    if item['source']['type'] == 'bank':
+                        for sentence in re.split(r'(?<=[.!?])\s+', item['text']):
+                            if len(sentence.strip()) >= 40:
+                                text = text.replace(sentence.strip(), '')
+            # A dated historical source remains attributable; it is not an impact estimate.
+            for item in registry.values():
+                if item['source']['type'] == 'bank' and item.get('published_at'):
+                    published = date.fromisoformat(item['published_at'])
+                    months = ('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря')
+                    for value in (published.isoformat(), published.strftime('%d.%m.%Y'),
+                                  f'{published.day} {months[published.month - 1]} {published.year}'):
+                        text = text.replace(value, '')
+            text = re.sub(r'(?m)^\s*\d+[.)]\s+', '', text)
+            if numbers(text):
+                raise EvidenceError('Без подходящей позиции банка нужна качественная оценка без точных чисел в выводах и последствиях; числа новости оставь в фактах')
+        relevant = (context.get('event_relevance') or {}).get('level') in {'high', 'medium', 'low'}
+        if policy.get('require_impacts') and relevant:
+            if not result.risks and not result.opportunities:
+                raise EvidenceError('Объясни хотя бы одно возможное последствие новости для компании с условиями и ссылкой на новость; отсутствие аналитики банка не останавливает анализ')
+            if not any(primary_id in item.source_ids for item in [*result.risks, *result.opportunities]):
+                raise EvidenceError('Качественная оценка последствий должна опираться на выбранную новость')
     if bank.status == "found":
+        if policy.get('mode') == 'qualitative':
+            raise EvidenceError('Подходящей текущей позиции банка нет; укажи отсутствие позиции и сформируй качественную оценку AI')
         if len(normalized(bank.text)) < 40:
             raise EvidenceError("Банковская выдержка слишком короткая для содержательной оценки")
         used.update(bank.source_ids)
@@ -85,9 +118,8 @@ def verify_result(result: InsightResult, context: dict) -> None:
                 raise EvidenceError("Дата банковского материала не подходит для текущей позиции")
     if used - {s.id for s in result.sources}:
         raise EvidenceError("Не все использованные источники доступны в ответе")
-    bank_items = [item for item in registry.values() if item['source']['type'] == 'bank']
-    if bank_items and not any(source.type == 'bank' for source in result.sources):
-        raise EvidenceError('Найден подходящий банковский фон. Используй поддерживаемое им утверждение с датой и настоящим источником; не выдавай прогноз за решение.')
+    # Retrieval overlap alone does not establish usefulness for this company.
+    # The model may decline a bank fragment and continue with qualitative news analysis.
     # Historical context referenced in interpretation must be available and dated.
     for sid, item in registry.items():
         if item['source']['type'] != 'bank':

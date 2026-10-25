@@ -2,14 +2,15 @@ import { useMemo, useState } from 'react';
 import type { News } from '../../api/news';
 import css from './index.module.scss';
 import { Loader } from '../Loader';
-import { getRelevanceStatus } from '../../lib/getRelevanceStatus';
+import { getRelevanceLevel, getRelevanceStatus } from '../../lib/getRelevanceStatus';
 
 export type PreviewStatus = 'risk' | 'opportunity' | 'watch';
-type Tab = 'all' | 'high' | 'low';
+type Tab = 'all' | 'high' | 'medium' | 'low';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'all', label: 'Все новости' },
   { id: 'high', label: 'Высокая релевантность' },
+  { id: 'medium', label: 'Средняя релевантность' },
   { id: 'low', label: 'Низкая релевантность' },
 ];
 
@@ -46,11 +47,8 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
     const term = query.trim().toLocaleLowerCase('ru');
 
     return items.filter((item) => {
-      const score = item.relevance_score;
-      if (tab === 'high' && (score === undefined || score < 20)) {
-        return false;
-      }
-      if (tab === 'low' && (score === undefined || score >= 20)) {
+      const level = getRelevanceLevel(item.relevance_score);
+      if (tab !== 'all' && level !== tab) {
         return false;
       }
       if (source !== 'all' && item.source_name !== source) {

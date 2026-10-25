@@ -9,7 +9,7 @@ from time import monotonic
 
 from app.agent.tools import validate_profile
 from app.rag.search import topics
-from app.agent.relevance import RelevanceEngine, candidate_news
+from app.agent.relevance import RelevanceEngine, candidate_news, news_brief
 
 GENERIC = {'деятел', 'управл', 'услуг', 'торгов', 'рознич', 'оптов', 'проч', 'собств', 'аренд', 'органи', 'област', 'компан', 'предпр', 'вспомо', 'специа', 'проект'}
 # The longest matching code takes precedence. Text only supplements an unknown code.
@@ -121,8 +121,8 @@ def rank_news(profile, news_items, limit=10, *, assessments=None):
             results.append(_card(news, score, reasons, assessment=assessment))
             continue
         title = news.get('title', '')
-        # Main event: title and lead, rather than a passing mention deep in the article.
-        lead = re.split(r'(?<=[.!?])\s+', news.get('body', ''))[0][:650]
+        # Use the same stored brief as the model, including for preliminary retrieval.
+        lead = re.split(r'(?<=[.!?])\s+', news_brief(news)['body'])[0][:650]
         main = (title + ' ' + lead).lower().replace('ё', 'е')
         title_lower = title.lower().replace('ё', 'е')
         title_sectors = {name for name, (_, _, pattern) in INDUSTRIES.items()
