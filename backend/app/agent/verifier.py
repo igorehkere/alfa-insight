@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 from datetime import date
 
 from app.agent.errors import EvidenceError
@@ -82,11 +83,72 @@ def verify_result(result: InsightResult, context: dict) -> None:
         raise EvidenceError("Неизвестное доказательство")
 
 
+def chat_claims(text):
+    """Conservative value/unit/subject matching; not general semantic entailment."""
+    claims = []
+    pattern = re.compile(r"(?P<value>[+−-]?(?:\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?))"
+                         r"[ \u00a0\u202f]*(?P<scale>млн|тыс|миллион\w*|тысяч\w*)?\.?[ \u00a0\u202f]*"
+                         r"(?P<unit>%|процент\w*|руб(?:лей|ля|ль|\.)?|доллар\w*|евро|штук\w*|станк\w*|год\w*|г\.|дн\w*|день|дней|месяц\w*|тонн\w*)?", re.I)
+    for sentence in re.split(r"(?<=[.!?])\s+(?=[А-ЯЁA-Z])|\n", text):
+        lower = sentence.lower().replace("ё", "е")
+        for match in pattern.finditer(lower):
+            value = Decimal(re.sub(r"[ \u00a0\u202f]", "", match["value"]).replace(",", ".").replace("−", "-"))
+            scale = match["scale"] or ""
+            unit = match["unit"] or ""
+            if scale:
+                value *= 1000000 if scale.startswith(("млн", "миллион")) else 1000
+            if unit.startswith(("%", "процент")):
+                unit = "percent"
+            elif unit.startswith("руб"):
+                unit = "rub"
+            elif unit.startswith("доллар"):
+                unit = "usd"
+            elif unit.startswith(("год", "г.")):
+                unit = "year"
+            elif unit.startswith(("дн", "день", "дней")):
+                unit = "day"
+            elif unit.startswith("месяц"):
+                unit = "month"
+            elif unit.startswith("тонн"):
+                unit = "tonne"
+            elif unit.startswith(("штук", "станк")):
+                unit = "count"
+            # Percentage subjects matter: a key rate is not a loan offer or inflation.
+            role = ""
+            if unit == "percent":
+                subjects = []
+                before = lower[:match.start()]
+                for subject, expression in (("key_rate", r"ключев\w* ставк"), ("inflation", r"инфляц|дефляц"),
+                                            ("loan", r"кредит|займ|заем|заём"), ("deposit", r"вклад|депозит")):
+                    subjects.extend((m.start(), subject) for m in re.finditer(expression, before))
+                if subjects:
+                    role = max(subjects)[1]
+            claims.append((value, unit, role))
+    return claims
+
+
 def verify_answer(answer: AnswerResponse, context: dict) -> None:
     if set(answer.source_ids) - context["evidence"].keys():
         raise EvidenceError("Чат сослался на источник вне сохранённого контекста")
     if not answer.source_ids and not answer.warnings:
         raise EvidenceError("Ответ без источников должен явно сообщать об ограничении")
-    support = " ".join(context["evidence"][s]["text"] for s in answer.source_ids)
-    if not numbers(answer.answer) <= numbers(support):
-        raise EvidenceError("Числа в ответе чата не подтверждены процитированными источниками")
+    support_texts = [context["evidence"][s]["text"] for s in answer.source_ids]
+    # Strip only line-initial list markers and the exact scoped company identifier.
+    text = re.sub(r"(?m)^([ \t]*)\d+[.)][ \t]+", r"\1", answer.answer)
+    company_id = context.get("company_id")
+    if company_id:
+        if company_id.isdigit():
+            label = r"((?:компани[яию]|company|id)\s*(?:[:№=]\s*)?)"
+            text = re.sub(label + re.escape(company_id) + r"(?![\w%]|\s*(?:%|руб|процент))", r"\1", text, flags=re.I)
+        else:
+            text = re.sub(r"(?<![\w])" + re.escape(company_id) + r"(?![\w])", "", text)
+    allowed = {claim for source in support_texts for claim in chat_claims(source)}
+    for value, unit, role in chat_claims(text):
+        if not any(value == v and unit == u and (not role or role == r) for v, u, r in allowed):
+            raise EvidenceError("Числа, единицы или смысл значения в ответе чата не подтверждены процитированными источниками")
+    # Bare-number matching never permits a promise or an invented legal duty.
+    for sentence in re.split(r"(?<=[.!?])\s+|\n", answer.answer):
+        lower = sentence.lower()
+        if re.search(r"(?:банк|кредит)[^.]*?(?:одобрит|одобрен|выдаст|гарантирует|предлагает)|(?:вы|сотрудник|компания|работодатель) (?:обязан|должн)|у вас (?:есть )?(?:долг|просрочка)", lower):
+            if not any(normalized(sentence) in normalized(source) for source in support_texts):
+                raise EvidenceError("Обещание, обязанность или долг не подтверждены первичной выдержкой")
