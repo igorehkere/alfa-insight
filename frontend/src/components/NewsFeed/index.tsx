@@ -158,7 +158,7 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
                   {formatDate(item.published_at)}
                 </time>
               </div>
-              <h3 className={css.title}>{item.title}</h3>
+              <h3 className={css.title}>{item.title.slice(0, -12)}</h3>
               <p className={css.excerpt}>
                 {item.relevance_reasons
                   ?.map((reason) => reason.reason)

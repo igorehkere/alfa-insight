@@ -72,6 +72,50 @@
   line-height: 1.4;
   font-weight: 700;
 }
+.newsActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  .sourceButton,
+  .analyzeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+}
+.analysisLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  min-height: 180px;
+  padding: 24px;
+
+  background: #fff;
+  border-radius: 10px;
+
+  p {
+    margin: 0;
+    color: #8c96a4;
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
+.analysisSpinner {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  flex: 0 0 80px;
+}
 .redDot {
   display: inline-block;
   flex-shrink: 0;
@@ -132,22 +176,16 @@
 }
 .contextBadges {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-
+  flex-direction: column;
   gap: 8px 16px;
-
   padding-top: 12px;
   margin-top: 12px;
-
   border-top: 1px solid #e9e9ed;
-
   font-size: 11px;
   color: #8792a1;
 
   > span {
     display: inline-flex;
-    align-items: center;
     gap: 4px;
 
     min-width: 0;
@@ -256,44 +294,31 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
-  gap: 9px;
-
+  gap: 8px;
   min-height: 38px;
-  padding: 0 17px;
-
-  border: 1px solid #ef3226;
+  padding: 0 16px;
+  border: 1px solid #9b62fa;
   border-radius: 6px;
-
-  background: #ef3226;
+  background: #9b62fa;
   color: #fff;
-
   font-family: 'Inter Variable', sans-serif;
   font-size: 12px;
   font-weight: 600;
-
+  white-space: nowrap;
   cursor: pointer;
-
   transition:
     background 0.2s ease,
-    transform 0.2s ease,
+    border-color 0.2s ease,
     box-shadow 0.2s ease;
-
   &:hover:not(:disabled) {
-    background: #d9231a;
-    box-shadow: 0 4px 12px rgba(239, 50, 38, 0.18);
-    transform: translateY(-1px);
+    background: #8647e8;
+    border-color: #8647e8;
+    box-shadow: 0 3px 12px rgba(155, 98, 250, 0.2);
   }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
   &:disabled {
     opacity: 0.65;
     cursor: default;
   }
-
   svg {
     flex-shrink: 0;
   }
