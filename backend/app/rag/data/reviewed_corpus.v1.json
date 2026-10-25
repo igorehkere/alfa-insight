@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "documents": [
+    {
+      "id": "alfa-rate-2026-09-11",
+      "title": "Ключевая ставка ЦБ РФ: ставка без изменения на 14,0%, риторика стала жестче",
+      "filename": "ALFA-Macro_Insights-Policy_Rate_11Sep.pdf",
+      "published_at": "2026-09-11",
+      "source_url": null,
+      "sha256": "92a96805f2b720f76bd0c52d2491044812b38401ab62d0f4a9157b4ca81c49bb",
+      "page_count": 4,
+      "origin": "bank",
+      "extraction_profile": "selected-excerpts:visual-review-v1"
+    },
+    {
+      "id": "alfa-inflation-2026-09-02",
+      "title": "Инфляция 25-31 августа: основные выводы",
+      "filename": "Inflation_tracker_02.pdf",
+      "published_at": "2026-09-02",
+      "source_url": null,
+      "sha256": "09d5537f6a52f5f8f2d9518ed9171e794382972ce38cbdc4bd3099b2db129d0c",
+      "page_count": 3,
+      "origin": "bank",
+      "extraction_profile": "selected-excerpts:visual-review-v1"
+    },
+    {
+      "id": "alfa-macro-7m26-2026-09-07",
+      "title": "Макростатистика 7М26: данные по рынку труда не подтверждают охлаждения экономики",
+      "filename": "ALFA-7M26.pdf",
+      "published_at": "2026-09-07",
+      "source_url": null,
+      "sha256": "3c64c1e43f3b46a795f9581967f2dbc8efb0994cb77ab82e95da180830e9ff8c",
+      "page_count": 4,
+      "origin": "bank",
+      "extraction_profile": "selected-excerpts:visual-review-v1"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "alfa-rate-2026-09-11:92a96805f2b7:p1:reviewed-0",
+      "document_id": "alfa-rate-2026-09-11",
+      "page_number": 1,
+      "chunk_index": 0,
+      "text": "ЦБ РФ на сегодняшнем заседании принял решение взять паузу и оставить ставку неизменной на уровне 14,0%.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-rate-2026-09-11:92a96805f2b7:p1:reviewed-1",
+      "document_id": "alfa-rate-2026-09-11",
+      "page_number": 1,
+      "chunk_index": 1,
+      "text": "По оценке ЦБ РФ, основные проинфляционные риски «связаны с дисбалансом спроса и предложения в случае более высокого внутреннего спроса и более продолжительного выбытия производственных мощностей в отдельных отраслях».",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-rate-2026-09-11:92a96805f2b7:p1:reviewed-2",
+      "document_id": "alfa-rate-2026-09-11",
+      "page_number": 1,
+      "chunk_index": 2,
+      "text": "Мы ожидаем сохранения паузы на заседании 23 октября: С учетом риторики ЦБ РФ мы меняем наш взгляд на динамику ключевой ставки на этот год. Если раньше мы ориентировались на ставку на уровне 13,5% на конец 2026 г., то теперь мы ожидаем ее сохранения на текущем значении 14,0% до конца года. При этом наш прогноз по ставке на конец 2027 г. остается на уровне 12,0%.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-inflation-2026-09-02:09d5537f6a52:p1:reviewed-0",
+      "document_id": "alfa-inflation-2026-09-02",
+      "page_number": 1,
+      "chunk_index": 0,
+      "text": "За прошедшую неделю (25.08-31.08) Росстат зафиксировал дефляцию на 0,01% н/н после инфляции на 0,01% н/н на предыдущей неделе 18.08-24.08. На 31 августа снижение цен с начала месяца составило 0,08%, с начала года рост цен составил 4,67%. В годовом выражении инфляция выросла до 6,32%.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-inflation-2026-09-02:09d5537f6a52:p1:reviewed-1",
+      "document_id": "alfa-inflation-2026-09-02",
+      "page_number": 1,
+      "chunk_index": 1,
+      "text": "Рост цен на бензин остался умеренно высоким — 0,91% н/н после роста на 0,89% н/н неделей ранее. Цены на дизель остались почти без изменений. В целом динамика цен на топливо оказалась значительно лучше наших прогнозов.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-inflation-2026-09-02:09d5537f6a52:p1:reviewed-2",
+      "document_id": "alfa-inflation-2026-09-02",
+      "page_number": 1,
+      "chunk_index": 2,
+      "text": "С другой стороны, ослабление курса рубля, на наш взгляд, продолжит воздействовать на динамику цен в непродовольственном сегменте.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-inflation-2026-09-02:09d5537f6a52:p1:reviewed-3",
+      "document_id": "alfa-inflation-2026-09-02",
+      "page_number": 1,
+      "chunk_index": 3,
+      "text": "Мы также полагаем, что складывающаяся ситуация на рынке топлива не позволяет рассчитывать на то, что новая волна роста цен уже исчерпана, поэтому динамика в этом сегменте остается важным проинфляционным риском.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-macro-7m26-2026-09-07:3c64c1e43f3b:p1:reviewed-0",
+      "document_id": "alfa-macro-7m26-2026-09-07",
+      "page_number": 1,
+      "chunk_index": 0,
+      "text": "Основной причиной мы считаем замедление роста потребления в сегменте непродовольственных товаров, в частности в сегменте покупок автомобилей.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-macro-7m26-2026-09-07:3c64c1e43f3b:p1:reviewed-1",
+      "document_id": "alfa-macro-7m26-2026-09-07",
+      "page_number": 1,
+      "chunk_index": 1,
+      "text": "В ближайшие месяцы мы ориентируемся на дополнительное замедление роста потребления на фоне более слабых продаж автомобилей — в августе объем их продаж упал на 7% как к июлю 2026 г., так и в годовом выражении.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    },
+    {
+      "id": "alfa-macro-7m26-2026-09-07:3c64c1e43f3b:p1:reviewed-2",
+      "document_id": "alfa-macro-7m26-2026-09-07",
+      "page_number": 1,
+      "chunk_index": 2,
+      "text": "С учетом того, что в летние месяцы негативное развитие событий касалось не только сегмента нефтепереработки, но и других отраслей (складов и транспортной инфраструктуры), мы ожидаем, что в ближайшие месяцы показатели финансов компаний останутся на низких уровнях.",
+      "extraction_method": "manual_transcription",
+      "reviewed": true
+    }
+  ],
+  "pages": []
+}

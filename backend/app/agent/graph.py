@@ -11,6 +11,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
 
 from app.agent.errors import EvidenceError, InvalidInput
+from app.agent.evidence import bank_evidence_gap, decision_rates
 from app.agent.schema import AgentAnalysis, InsightResult
 from app.agent.service import (compact_profile, complete_json, event_date, execute_plan,
                                make_context, news_evidence, tool_call)
@@ -77,11 +78,33 @@ async def find_evidence(data: Workflow, runtime: Runtime[GraphContext]):
 
 
 async def assess_evidence(data: Workflow):
-    # This is a conservative availability check, not a semantic proof of a claim.
     state = data["agent"]
-    enough = any(e["source"]["type"] == "bank" for e in state.evidence.values())
-    state.record("verify", "Есть банковские доказательства" if enough else "Банковских доказательств недостаточно",
-                 status="ok" if enough else "insufficient_evidence")
+    banks = {sid: item for sid, item in state.evidence.items() if item["source"]["type"] == "bank"}
+    gaps = []
+    for sid, item in banks.items():
+        gap = bank_evidence_gap(state.news, item, event_date(state.news))
+        if gap:
+            gaps.append(gap)
+            state.evidence.pop(sid)
+    # Conflicting decisions on the same date cannot both support a bank position.
+    by_date = {}
+    for sid, item in banks.items():
+        if sid in state.evidence:
+            by_date.setdefault(item["published_at"], []).append((sid, decision_rates(item["text"])))
+    for rows in by_date.values():
+        rates = set().union(*(values for _, values in rows))
+        if len(rates) > 1:
+            gaps.append("Противоречивые значения решения по ставке в материалах одной даты")
+            for sid, values in rows:
+                if values:
+                    state.evidence.pop(sid, None)
+    enough = any(item["source"]["type"] == "bank" for item in state.evidence.values())
+    if state.news.get("body_is_summary"):
+        state.record("verify", "Покрытие ограничено описанием новости; полный текст недоступен", status="insufficient_evidence")
+    details = "; ".join(dict.fromkeys(gaps)) if gaps else (
+        "Найдены сверенные банковские выдержки по теме и дате; это эвристическая оценка" if enough
+        else "Банковских доказательств по теме и дате недостаточно")
+    state.record("verify", details, status="ok" if enough and not gaps else "insufficient_evidence")
     return {"enough": enough}
 
 

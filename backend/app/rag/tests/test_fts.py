@@ -41,7 +41,11 @@ class FTSTests(unittest.TestCase):
                 self.assertTrue(any(row["document_id"] == doc and row["page_number"] == 1 for row in rows), rows)
                 self.assertTrue(all(row["reviewed"] and row["origin"] == "bank" for row in rows))
         self.assertEqual(self.store.search("астероиды"), [])
-        self.assertEqual(self.store.search("ключевая ставка", as_of=date(2026,9,1)), [])
+        historical = self.store.search("ключевая ставка", as_of=date(2026,9,1))
+        self.assertTrue(historical)  # Newly reviewed July/August reports are now available.
+        self.assertTrue(all(row["published_at"] <= "2026-09-01" for row in historical))
+        self.assertFalse(any(row["document_id"] == "alfa-rate-2026-09-11" for row in historical))
+        self.assertEqual(self.store.search("ключевая ставка", as_of=date(2020,1,1)), [])
 
     def test_reimport_is_idempotent_and_review_changes_version(self):
         self.index()
@@ -96,9 +100,35 @@ class FTSTests(unittest.TestCase):
 
 
 class ReviewedCorpusTests(unittest.TestCase):
-    def test_three_real_documents_with_unique_reviewed_page_excerpts(self):
+    def test_expanded_documents_retain_reviewed_page_excerpts_and_original_ids(self):
         corpus = read_corpus(CORPUS)
         self.assertGreaterEqual(len(corpus.documents), 3)
         self.assertGreaterEqual(len(corpus.chunks), 10)
         self.assertTrue(all(c.reviewed and c.extraction_method == "manual_transcription" for c in corpus.chunks))
         self.assertTrue(all(d.origin == "bank" for d in corpus.documents))
+
+    def test_original_corpus_is_a_compatible_subset_and_pdf_hashes_match(self):
+        import hashlib
+        import pymupdf
+        corpus = read_corpus(CORPUS)
+        old = read_corpus(CORPUS.with_name("reviewed_corpus.v1.json"))
+        self.assertEqual(len(corpus.documents), 8)
+        self.assertEqual(len(corpus.chunks), 46)
+        current = {chunk.id: chunk.model_dump() for chunk in corpus.chunks}
+        self.assertTrue(all(current[c.id] == c.model_dump() for c in old.chunks))
+        originals = Path(__file__).resolve().parents[4] / "analitics"
+        for document in corpus.documents:
+            path = originals / document.filename
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), document.sha256)
+            with pymupdf.open(path) as pdf:
+                self.assertEqual(len(pdf), document.page_count)
+
+    def test_new_topics_and_historical_steel_are_traceable(self):
+        from app.rag.search import JsonBankSearch
+        search = JsonBankSearch(CORPUS)
+        for query, document in [("потребление", "alfa-consumption-2026-08-05"),
+                                ("плавающая ставка заемщика", "alfa-fi-strategy-2026-07-22"),
+                                ("РусГидро", "alfa-bond-2026-09-14"),
+                                ("плоского проката", "alfa-steel-2021-04-15")]:
+            with self.subTest(query=query):
+                self.assertTrue(any(row["document_id"] == document for row in search.search(query)))

@@ -4,18 +4,24 @@ from __future__ import annotations
 import asyncio
 import copy
 import json
+import logging
+from time import perf_counter
 from dataclasses import dataclass
 from datetime import date, datetime
 
 from pydantic import ValidationError
 
 from app.agent.errors import AgentUnavailable, EvidenceError, InvalidInput
+from app.agent.evidence import bank_evidence_gap
 from app.agent.llm_client import LLMError
 from app.agent.prompts import PROMPT_VERSION, messages
 from app.agent.schema import AgentAnalysis, AnalyzeRequest, AnswerResponse, AskRequest, InsightResult
 from app.agent.state import AgentLimits, AgentState, Plan
 from app.agent.tools import validate_profile
 from app.agent.verifier import verify_answer, verify_result
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -56,9 +62,11 @@ async def complete_json(tools, state, limits, stage, payload, model):
         raise EvidenceError("Исчерпан лимит обращений к модели")
     state.llm_calls += 1
     budget = limits.plan_tokens if stage in {"plan", "replan"} else limits.analysis_tokens
+    started = perf_counter()
     try:
         reply = await tools.llm.complete(messages(stage, payload, model.model_json_schema()), max_tokens=budget)
     except LLMError as exc:
+        logger.info("agent stage=%s reason=provider_unavailable attempt=%s elapsed=%.3f", stage, state.llm_calls, perf_counter() - started)
         raise AgentUnavailable(str(exc)) from None
     except EvidenceError as exc:
         metrics = getattr(exc, "response_metrics", None)
@@ -71,6 +79,8 @@ async def complete_json(tools, state, limits, stage, payload, model):
                         "tokens": reply.usage.model_dump() if reply.usage else None,
                         "elapsed_seconds": reply.elapsed_seconds,
                         "finish_reason": reply.finish_reason})
+    logger.info("agent stage=%s reason=completed attempt=%s elapsed=%.3f usage=%s",
+                stage, state.llm_calls, perf_counter() - started, state.usage[-1]["tokens"])
     if reply.finish_reason == "length":
         raise EvidenceError("Ответ модели обрезан лимитом токенов")
     text = reply.text.strip()
@@ -127,6 +137,10 @@ async def execute_plan(plan, state, tools, limits, as_of):
             except (KeyError, TypeError, ValueError):
                 continue
             if published > as_of or (as_of - published).days > 365:
+                continue
+            gap = bank_evidence_gap(state.news, row, as_of)
+            if gap:
+                state.record("verify", gap, status="insufficient_evidence")
                 continue
             source_id = "bank:" + row["chunk_id"]
             bank_count = sum(e["source"]["type"] == "bank" for e in state.evidence.values())

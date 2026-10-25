@@ -13,3 +13,11 @@ notes.md
 # Local regression checks
 /backend/app/agent/tests/test_chat_context.py
 /backend/app/agent/tests/test_llm_failover.py
+
+# Local launcher and its logs
+/start-local.sh
+/.local-run/
+
+# Local analysis and improvement proposals
+/suggestions/
+/docs/
