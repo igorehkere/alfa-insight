@@ -42,6 +42,16 @@
   padding: 19px 19px 17px;
   border-radius: 10px;
   background: white;
+  .relevanceText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .bodyText {
+    margin: 0;
+    line-height: 1.6;
+  }
+}
 }
 .mainNews {
   padding-top: 21px;
@@ -73,20 +83,60 @@
   font-weight: 700;
 }
 .newsActions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
   margin-top: 16px;
   .sourceButton,
   .analyzeButton {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-
-    min-height: 38px;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
     margin: 0;
+    padding: 0 12px;
     box-sizing: border-box;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .sourceButton {
+    background: #ef3226;
+    border: 1px solid #ef3226;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    img {
+      width: 16px;
+      height: 16px;
+      filter: brightness(0) invert(1);
+    }
+    &:hover {
+      background: #d9231a;
+    }
+  }
+  .analyzeButton {
+    background: #9b62fa;
+    border: 1px solid #9b62fa;
+    &:hover:not(:disabled) {
+      background: #8647e8;
+    }
+    &:disabled {
+      cursor: default;
+    }
+  }
+  .analyzeButton:only-child {
+    grid-column: 1 / -1;
   }
 }
 .analysisLoading {
@@ -128,6 +178,7 @@
 }
 .bodyText {
   margin: 0;
+  padding-right: 40px;
   font-size: 12px;
   line-height: 1.48;
   color: #515c6a;

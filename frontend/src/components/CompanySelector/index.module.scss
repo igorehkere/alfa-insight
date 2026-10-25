@@ -1,109 +1,119 @@
 .form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 20px;
+  font-family: 'Inter Variable', sans-serif;
+  .field {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    margin-top: 20px;
-    font-family: "Inter Variable", sans-serif;
-    .field {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        label {
-            font-family: "Inter Variable", sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            color: #333333;
-        }
-        .input, .select {
-            box-sizing: border-box;
-            height: 42px;
-            width: 100%;
-            padding: 0 14px;
-            background-color: #FFFFFF;
-            border: 1px solid #D9E1E8;
-            border-radius: 10px;
-            font-family: "Inter Variable", sans-serif;
-            font-size: 14px;
-            font-weight: 400;
-            color: #000000;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            &:hover {
-                border-color: #ABB0B5;
-            }
-            &:focus {
-                border-color: #F01A21;
-                box-shadow: 0 0 0 3px rgba(240, 26, 33, 0.08);
-            }
-            &:disabled {
-                background-color: #F5F5F5;
-                color: #999999;
-                cursor: not-allowed;
-            }
-        }
-        .input {
-            &::placeholder {
-                color: #999999;
-                font-weight: 400;
-            }
-        }
-        .select {
-            cursor: pointer;
-
-            option {
-                font-family: "Inter Variable", sans-serif;
-                font-size: 14px;
-                color: #000000;
-            }
-        }
+    gap: 8px;
+    label {
+      font-family: 'Inter Variable', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: #333333;
     }
-    .error {
-        font-family: "Inter Variable", sans-serif;
-        font-size: 13px;
+    .input,
+    .select {
+      box-sizing: border-box;
+      height: 42px;
+      width: 100%;
+      padding: 0 14px;
+      background-color: #ffffff;
+      border: 1px solid #d9e1e8;
+      border-radius: 10px;
+      font-family: 'Inter Variable', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #000000;
+      outline: none;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+      &:hover {
+        border-color: #abb0b5;
+      }
+      &:focus {
+        border-color: #f01a21;
+        box-shadow: 0 0 0 3px rgba(240, 26, 33, 0.08);
+      }
+      &:disabled {
+        background-color: #f5f5f5;
+        color: #999999;
+        cursor: not-allowed;
+      }
+    }
+    .input {
+      &::placeholder {
+        color: #999999;
         font-weight: 400;
-        color: #F01A21;
+      }
     }
-    .buttons {
-        display: flex;
-        gap: 10px;
-        width: 100%;
-        margin-top: 14px;
-        button {
-            height: 39px;
-            min-width: 0;
-            border: none;
-            border-radius: 10px;
-            font-family: "Inter Variable", sans-serif;
-            font-size: 16px;
-            font-weight: 400;
-            cursor: pointer;
-            transition: background-color 0.2s ease, opacity 0.2s ease;
-            &:first-child {
-                flex: 1;
+    .select {
+      appearance: none;
 
-                background-color: #E7EFF7;
-                color: #000000;
+      padding: 12px 48px 12px 18px;
 
-                &:hover {
-                    background-color: #ABB0B5;
-                }
-            }
-            &:last-child {
-                flex: 1.8;
+      background-color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233a4350' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
 
-                background-color: #F01A21;
-                color: #FFFFFF;
+      background-position: right 10px center;
+      background-size: 16px;
 
-                &:hover:not(:disabled) {
-                    background-color: #8E1014;
-                }
-            }
-            &:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+      cursor: pointer;
+    }
+  }
+  .error {
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #f01a21;
+  }
+  .buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+    button {
+      height: 39px;
+      min-width: 0;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter Variable', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      cursor: pointer;
+      transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+      &:first-child {
+        flex: 1;
+
+        background-color: #e7eff7;
+        color: #000000;
+
+        &:hover {
+          background-color: #abb0b5;
         }
+      }
+      &:last-child {
+        flex: 1.8;
+
+        background-color: #f01a21;
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+          background-color: #8e1014;
+        }
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
+  }
 }

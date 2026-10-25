@@ -11,10 +11,71 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-# RSS-адреса https://www.cbr.ru/development/RSS/
+# RSS-адреса
 RSS_SOURCES: dict[str, tuple[str, str]] = {
-    "news": ("Банк России — новости", "https://www.cbr.ru/rss/eventrss"),
-    "press": ("Банк России — пресс-релизы", "https://www.cbr.ru/rss/RssPress"),
+    # Банк России
+    "news": (
+        "Банк России — новости",
+        "https://www.cbr.ru/rss/eventrss",
+    ),
+    "press": (
+        "Банк России — пресс-релизы",
+        "https://www.cbr.ru/rss/RssPress",
+    ),
+    # Коммерсантъ
+    "kommersant_business": (
+        "Коммерсантъ — бизнес",
+        "https://www.kommersant.ru/rss/section-business.xml",
+    ),
+    "kommersant_economics": (
+        "Коммерсантъ — экономика",
+        "https://www.kommersant.ru/rss/section-economics.xml",
+    ),
+    # Ведомости — финансы
+    "vedomosti_finance": (
+        "Ведомости — финансы",
+        "https://www.vedomosti.ru/rss/rubric/finance",
+    ),
+    # Ведомости — торговля и услуги
+    "vedomosti_retail": (
+        "Ведомости — торговля и услуги",
+        "https://www.vedomosti.ru/rss/rubric/business/retail",
+    ),
+    # Ведомости — промышленность
+    "vedomosti_industry": (
+        "Ведомости — промышленность",
+        "https://www.vedomosti.ru/rss/rubric/business/industry",
+    ),
+    # Ведомости — сельское хозяйство
+    "vedomosti_agriculture": (
+        "Ведомости — агропромышленный комплекс",
+        "https://www.vedomosti.ru/rss/rubric/business/agriculture",
+    ),
+    # Ведомости — транспорт
+    "vedomosti_transport": (
+        "Ведомости — транспорт",
+        "https://www.vedomosti.ru/rss/rubric/business/transport",
+    ),
+    # Ведомости — налоги
+    "vedomosti_taxes": (
+        "Ведомости — налоги и сборы",
+        "https://www.vedomosti.ru/rss/rubric/economics/taxes",
+    ),
+    # Ведомости — IT
+    "vedomosti_it": (
+        "Ведомости — IT-бизнес",
+        "https://www.vedomosti.ru/rss/rubric/technology/it_business",
+    ),
+    # Ведомости — телекоммуникации
+    "vedomosti_telecom": (
+        "Ведомости — телекоммуникации",
+        "https://www.vedomosti.ru/rss/rubric/technology/telecom",
+    ),
+    # Ведомости — недвижимость
+    "vedomosti_realty": (
+        "Ведомости — коммерческая недвижимость",
+        "https://www.vedomosti.ru/rss/rubric/realty/commercial_property",
+    ),
 }
 
 

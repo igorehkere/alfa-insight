@@ -179,10 +179,7 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
                 {formatDateTime(news.published_at)}
               </time>
             </div>
-            <h2 className={css.newsTitle}>
-              <span className={css.redDot} aria-hidden="true" />
-              {news.title.slice(0, -12)}
-            </h2>
+            <h2 className={css.newsTitle}>{news.title.slice(0, -12)}</h2>
             <p className={css.bodyText}>
               {news.content?.trim() ||
                 news.description?.trim() ||
@@ -191,6 +188,7 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
             <div className={css.newsActions}>
               {news.source_url && (
                 <a href={news.source_url} className={css.sourceButton} target="_blank" rel="noopener noreferrer">
+                  <img src="/images/share_icon.svg" />
                   Перейти к первоисточнику
                 </a>
               )}
@@ -219,7 +217,7 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
               <div className={css.analysisSpinner}>
                 <Loader type="section" />
               </div>
-              <p style={{"color": "#9b62fa"}}>Анализируем новость...</p>
+              <p style={{ color: '#9b62fa' }}>Анализируем новость...</p>
             </div>
           )}
           {analysisError && <p role="alert">{analysisError}</p>}
@@ -228,11 +226,13 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
               <section className={css.card}>
                 <h3 className={css.sectionTitle}>Почему это важно для вашей компании?</h3>
 
-                {analysis?.result.why_relevant.map((item, index) => (
-                  <p key={index} className={css.bodyText}>
-                    {item.text}
-                  </p>
-                ))}
+                <div className={css.relevanceText}>
+                  {analysis?.result.why_relevant.map((item, index) => (
+                    <p key={index} className={css.bodyText}>
+                      {item.text}
+                    </p>
+                  ))}
+                </div>
                 {analysis && (
                   <div className={css.contextBadges}>
                     {industry && (
@@ -292,11 +292,7 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
                 </p>
 
                 {analysis && analysis.result.warnings.length > 0 && (
-                  <div className={css.aiWarnings}>
-                    {analysis.result.warnings.map((warning, index) => (
-                      <p key={index}>{warning}</p>
-                    ))}
-                  </div>
+                  <p className={css.aiWarnings}>{analysis.result.warnings.join(' ')}</p>
                 )}
 
                 {/* История переписки */}
