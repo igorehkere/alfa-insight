@@ -171,7 +171,6 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
                 </p>
 
                 <div className={css.publisher}>
-                  <img className={css.brandIcon} src="/images/icon.svg" alt="" />
                   <span>{item.source_name}</span>
                 </div>
               </button>
