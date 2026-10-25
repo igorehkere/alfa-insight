@@ -1,0 +1,20 @@
+# Backend build uses the repository root, with an explicit allowlist.
+**
+!backend/
+!backend/requirements.txt
+!backend/app/
+!backend/app/**
+!backend/scripts/
+!backend/scripts/**
+!backend/sql/
+!backend/sql/**
+!data/
+!data/raw/
+!data/raw/*.csv
+**/__pycache__
+**/*.pyc
+**/tests
+backend/app/test
+**/.env
+**/.env.*
+**/*.log

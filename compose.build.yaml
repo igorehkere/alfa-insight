@@ -1,0 +1,14 @@
+# Explicit override: used on the build PC, never required on the VM.
+services:
+  init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile

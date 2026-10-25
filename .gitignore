@@ -5,6 +5,8 @@ create_user_db.txt
 __pycache__
 notes.md
 .env.prototype
+.env.docker
+*.dump
 
 # Local debug server and frontend
 /backend/app/test/

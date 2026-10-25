@@ -1,0 +1,85 @@
+name: alfa-insight
+
+x-backend: &backend
+  image: ${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME}/alfa-insight-backend:${IMAGE_TAG:?Set IMAGE_TAG}
+  environment: &backend-environment
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-alfa}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-alfa_insight}
+    RAG_DATABASE_URL: postgresql://${POSTGRES_USER:-alfa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-alfa_insight}
+    RAG_SEARCH_MODE: fts
+    LLM_BASE_URL: ${LLM_BASE_URL:-https://changellenge.up.railway.app/v1}
+    LLM_FALLBACK_BASE_URL: ${LLM_FALLBACK_BASE_URL:-https://api.alfahack-gateway26.ru/v1}
+    LLM_API_KEY: ${LLM_API_KEY:?Set LLM_API_KEY}
+    LLM_MODEL: ${LLM_MODEL:-deepseek-v4.1}
+    LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-30}
+    LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-256}
+    LLM_REASONING_EFFORT: ${LLM_REASONING_EFFORT:-none}
+    LLM_JSON_MODE: ${LLM_JSON_MODE:-true}
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-alfa_insight}
+      POSTGRES_USER: ${POSTGRES_USER:-alfa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  init:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      FETCH_NEWS_ON_INIT: ${FETCH_NEWS_ON_INIT:-true}
+    command: [python, backend/scripts/bootstrap.py]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    <<: *backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      start_period: 30s
+      retries: 10
+    restart: unless-stopped
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME}/alfa-insight-frontend:${IMAGE_TAG:?Set IMAGE_TAG}
+    ports:
+      - "${HTTP_BIND_ADDRESS:-0.0.0.0}:${HTTP_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  postgres_data:
