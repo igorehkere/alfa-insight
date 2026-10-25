@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { News } from '../../api/news';
 import css from './index.module.scss';
 import { Loader } from '../Loader';
+import { getRelevanceStatus } from '../../lib/getRelevanceStatus';
 
 export type PreviewStatus = 'risk' | 'opportunity' | 'watch';
 type Tab = 'all' | 'high' | 'low';
@@ -139,38 +140,43 @@ export function NewsFeed({ items, selectedNewsId, onSelectNews, isLoading, error
       <div className={css.cards}>
         {!isLoading &&
           !error &&
-          filtered.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              onClick={() => onSelectNews(item.id)}
-              className={`${css.card} ${selectedNewsId === item.id ? css.cardSelected : ''}`}
-              aria-pressed={selectedNewsId === item.id}
-            >
-              <div className={css.cardTop}>
-                <span className={css.badge}>
-                  <span className={css.badgeDot} />
-                  {typeof item.relevance_score === 'number'
-                    ? `Релевантность: ${Math.round(item.relevance_score)}/100`
-                    : 'Персональная рекомендация'}
-                </span>
-                <time className={css.date} dateTime={item.published_at ?? undefined}>
-                  {formatDate(item.published_at)}
-                </time>
-              </div>
-              <h3 className={css.title}>{item.title.slice(0, -12)}</h3>
-              <p className={css.excerpt}>
-                {item.relevance_reasons
-                  ?.map((reason) => reason.reason)
-                  .filter(Boolean)
-                  .join(' ') || 'Подобрано на основе профиля компании.'}
-              </p>
-              <div className={css.publisher}>
-                <img className={css.brandIcon} src="/images/icon.svg" />
-                <span>{item.source_name}</span>
-              </div>
-            </button>
-          ))}
+          filtered.map((item) => {
+            const relevance = getRelevanceStatus(item.relevance_score);
+            return (
+              <button
+                type="button"
+                key={item.id}
+                onClick={() => onSelectNews(item.id)}
+                className={`${css.card} ${selectedNewsId === item.id ? css.cardSelected : ''}`}
+                aria-pressed={selectedNewsId === item.id}
+              >
+                <div className={css.cardTop}>
+                  <span className={`${css.badge} ${css[relevance.className]}`}>
+                    {relevance.label}
+                    <span className={css.relevanceTooltip} role="tooltip">
+                      Релевантность: {item.relevance_score ?? '—'}/100
+                    </span>
+                  </span>
+
+                  <time className={css.date} dateTime={item.published_at ?? undefined}>
+                    {formatDate(item.published_at)}
+                  </time>
+                </div>
+
+                <h3 className={css.title}>{item.title.replace(/\s*\(\d{1,2}\.\d{1,2}\.\d{4}\)\s*$/, '')}</h3>
+
+                <p className={css.excerpt}>
+                  {item.relevance_reasons?.map((reason) => reason.reason).join(' ') ||
+                    'Подобрано на основе профиля компании.'}
+                </p>
+
+                <div className={css.publisher}>
+                  <img className={css.brandIcon} src="/images/icon.svg" alt="" />
+                  <span>{item.source_name}</span>
+                </div>
+              </button>
+            );
+          })}
       </div>
     </section>
   );

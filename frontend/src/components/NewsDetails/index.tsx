@@ -116,7 +116,7 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
   };
 
   // Chat
-  const [chatError, setChatError] = useState<string | null>(null);
+  const [, setChatError] = useState<string | null>(null);
   const [question, setQuestion] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [chatMessages, setChatMessages] = useState<
@@ -179,20 +179,13 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
                 {formatDateTime(news.published_at)}
               </time>
             </div>
-            <h2 className={css.newsTitle}>{news.title.slice(0, -12)}</h2>
+            <h2 className={css.newsTitle}>{news.title.replace(/\s*\(\d{1,2}\.\d{1,2}\.\d{4}\)\s*$/, '')}</h2>
             <p className={css.bodyText}>
               {news.content?.trim() ||
                 news.description?.trim() ||
                 'Текст новости пока отсутствует в базе. Полная публикация доступна по ссылке на первоисточник.'}
             </p>
             <div className={css.newsActions}>
-              {news.source_url && (
-                <a href={news.source_url} className={css.sourceButton} target="_blank" rel="noopener noreferrer">
-                  <img src="/images/share_icon.svg" />
-                  Перейти к первоисточнику
-                </a>
-              )}
-
               <button
                 type="button"
                 className={css.analyzeButton}
@@ -210,6 +203,12 @@ export function NewsDetails({ newsId, companyId, industry, products }: NewsDetai
 
                 <span>{isAnalyzing ? 'Анализируем...' : analysis ? 'Анализ выполнен' : 'Анализировать с ИИ'}</span>
               </button>
+              {news.source_url && (
+                <a href={news.source_url} className={css.sourceButton} target="_blank" rel="noopener noreferrer">
+                  <img src="/images/share_icon.svg" />
+                  Перейти к первоисточнику
+                </a>
+              )}
             </div>
           </article>
           {isAnalyzing && (
