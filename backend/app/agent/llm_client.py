@@ -133,6 +133,7 @@ class LLMClient(_SingleEndpointClient):
         settings = settings if settings is not None else LLMSettings.from_env()
         super().__init__(settings)
         self.diagnostics = deque(maxlen=50)
+        self.http_attempts_total = 0
         self._client = CompletionAdapter(self._client, settings, "primary", self._record)
         self._fallback = None
         self._use_fallback = False
@@ -141,6 +142,7 @@ class LLMClient(_SingleEndpointClient):
             self._fallback._client = CompletionAdapter(self._fallback._client, settings, "fallback", self._record)
 
     def _record(self, metrics):
+        self.http_attempts_total += 1
         self.diagnostics.append(metrics)
         logger.info("LLM response metrics: %s", metrics)
 

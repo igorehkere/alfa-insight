@@ -34,14 +34,14 @@ class OfflineLLM:
                 "why_relevant": why, "risks": [], "opportunities": [],
                 "bank_position": {"status": "found", "text": bank["text"], "source_ids": [bank["source"]["id"]]}
                     if bank else {"status": "not_found", "text": None, "source_ids": []},
-                "ai_interpretation": "Офлайн-пример показывает найденные факты и связи с профилем. Персональные риски и возможности требуют настоящего анализа разрешённой LLM.",
+                "ai_interpretation": "Офлайн-пример показывает найденные факты и связи с профилем. Персональные риски и возможности требуют анализа языковой моделью.",
                 "suggested_actions": ["Уточнить параметры компании, необходимые для оценки влияния события."],
                 "sources": [evidence[news["id"]]["source"]] + ([bank["source"]] if bank else []),
                 "warnings": ["Офлайн-демонстрация: языковая модель не вызывалась; риски и возможности не генерировались."],
             }
         elif stage == "ask":
             result = {"answer": "Для содержательного ответа на этот вопрос требуется разрешённая языковая модель. В офлайн-режиме доступны сохранённые факты и источники анализа.",
-                      "source_ids": [], "warnings": ["Содержательный ответ без LLM не сформирован."]}
+                      "source_ids": [], "warnings": ["Содержательное объяснение в этой демонстрации не формировалось."]}
         else:
             raise ValueError("Неизвестный офлайн-этап")
         return LLMReply(text=json.dumps(result, ensure_ascii=False), model=self.cache_identity,

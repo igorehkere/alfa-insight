@@ -11,7 +11,8 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator
 from psycopg import Error as PostgresError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from app.agent.errors import AgentError, AgentUnavailable, NotFound
+from app.agent.errors import AgentError, AgentUnavailable, NotFound, EvidenceError
+from app.agent.language import ensure_human
 from app.agent.recommendations import recommend_news
 from app.agent.runtime import AgentRuntime
 from app.agent.schema import AnalyzeRequest, AnswerResponse, AskRequest, InsightResponse, NonEmptyText, TraceResponse
@@ -41,7 +42,12 @@ def install_error_handlers(app):
     existing = dict(app.exception_handlers)
     @app.exception_handler(AgentError)
     async def agent_error(request, exc):
-        return JSONResponse(status_code=exc.status_code, content={"detail": str(exc)})
+        detail = str(exc)
+        try:
+            ensure_human(detail)
+        except EvidenceError:
+            detail = "Не удалось подтвердить объяснение по доступным сведениям. Уточните вопрос или повторите запрос."
+        return JSONResponse(status_code=exc.status_code, content={"detail": detail})
 
     @app.exception_handler(SQLAlchemyError)
     @app.exception_handler(PostgresError)
@@ -64,7 +70,7 @@ def create_router(*, include_news=True, include_feed=None):
         runtime = request.app.state.agent_runtime
         limits = getattr(request.app.state, "agent_limits", AgentLimits())
         if runtime.llm is None:
-            raise AgentUnavailable("Проверьте LLM_* в окружении backend")
+            raise AgentUnavailable("Сервис анализа временно недоступен")
         try:
             # Includes the queue, RAG initialization, loading and cache lookup.
             async with asyncio.timeout(limits.deadline_seconds):
@@ -88,14 +94,27 @@ def create_router(*, include_news=True, include_feed=None):
     @router.post("/api/insights/{insight_id}/ask", response_model=AnswerResponse, tags=["Агент"])
     async def ask(insight_id: str, payload: AskRequest, request: Request):
         runtime = request.app.state.agent_runtime
-        async with runtime.analysis_lock:
-            saved = await asyncio.to_thread(runtime.repository.load_insight, insight_id)
-            history = await asyncio.to_thread(runtime.repository.chat_history, insight_id)
-            answer = await answer_question(saved, payload.question, runtime.chat_tools(saved["company_id"]),
-                history=history["items"], turn_count=history["turn_count"],
-                limits=getattr(request.app.state, "agent_limits", AgentLimits()))
-            await asyncio.to_thread(runtime.repository.save_answer, insight_id, payload.question, answer)
-            return answer
+        limits = getattr(request.app.state, "agent_limits", AgentLimits())
+        started = asyncio.get_running_loop().time()
+        try:
+            async with asyncio.timeout(min(90, limits.deadline_seconds)):
+                async with runtime.analysis_lock:
+                    saved = await asyncio.to_thread(runtime.repository.load_insight, insight_id)
+                    history = await asyncio.to_thread(runtime.repository.chat_history, insight_id)
+                    tools = runtime.chat_tools(saved["company_id"])
+                    remaining = max(.001, min(90, limits.deadline_seconds) - (asyncio.get_running_loop().time() - started))
+                    answer = await answer_question(saved, payload.question, tools,
+                        history=history["items"], turn_count=history["turn_count"],
+                        limits=limits.model_copy(update={"deadline_seconds": remaining}))
+                    persist = getattr(runtime.repository, "save_chat_turn", None)
+                    if callable(persist) and hasattr(tools, "_chat_update"):
+                        await asyncio.to_thread(persist, insight_id, saved["company_id"], saved["news_id"],
+                                                payload.question, answer, tools._chat_update)
+                    else:
+                        await asyncio.to_thread(runtime.repository.save_answer, insight_id, payload.question, answer)
+                    return answer
+        except TimeoutError:
+            raise AgentUnavailable("Истекло время подготовки ответа") from None
 
     @router.get("/api/insights/{insight_id}/trace", response_model=TraceResponse, tags=["Агент"])
     async def trace(insight_id: str, request: Request):

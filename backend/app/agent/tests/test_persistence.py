@@ -73,8 +73,52 @@ class PersistenceTests(unittest.TestCase):
         self.assertEqual(len(self.repo.messages(first["insight_id"])), 4)
         history = self.repo.chat_history(first["insight_id"])
         self.assertEqual(history["turn_count"], 4)
-        self.assertEqual([r["question"] for r in history["items"]], ["Вопрос 2", "Вопрос 3"])
+        self.assertEqual([r["question"] for r in history["items"]], ["Вопрос 0", "Вопрос 1", "Вопрос 2", "Вопрос 3"])
         self.assertEqual(self.repo.messages(second["insight_id"]), [])
+
+    def test_compact_memory_and_evidence_are_atomic_scoped_and_keep_public_snapshot(self):
+        import copy
+        from types import SimpleNamespace
+        from app.agent.service import answer_question
+        from app.agent.errors import AmbiguousProfile
+        self.repo.initialize()
+        run = asyncio.run(run_analysis("DEMO_AUTO", "demo-rates", JsonTools(OfflineLLM(), company_id="DEMO_AUTO")))
+        public = self.repo.save_run("memory", "DEMO_AUTO", "demo-rates", run)
+        identifier = public["insight_id"]
+        before = copy.deepcopy(self.repo.load_insight(identifier))
+        for index in range(16):
+            question = "Расширяем автопарк. Бюджет 10 млн рублей. Все машины заняты." if index == 0 else "Бюджет теперь 8 млн рублей." if index == 6 else "Что сравнить?"
+            saved = self.repo.load_insight(identifier)
+            history = self.repo.chat_history(identifier)
+            tools = SimpleNamespace(company_id="DEMO_AUTO", llm=None, _can_save_chat=True)
+            response = asyncio.run(answer_question(saved, question, tools, history=history["items"], turn_count=history["turn_count"]))
+            self.repo.save_chat_turn(identifier, "DEMO_AUTO", "demo-rates", question, response, tools._chat_update)
+        after = self.repo.load_insight(identifier)
+        self.assertEqual(after["context"]["_chat"]["memory"]["facts"]["budget"]["value"], "8000000")
+        self.assertEqual(after["context"]["evidence"], before["context"]["evidence"])
+        self.assertEqual(self.repo.cached("memory"), public)
+        self.assertEqual(len(self.repo.chat_history(identifier)["items"]), 12)
+        self.assertEqual(len(self.repo.messages(identifier)), 16)
+        with self.assertRaises(InvalidInput):
+            self.repo.save_chat_turn(identifier, "OTHER", "demo-rates", "?", response, {"turn_count": 16})
+        with self.assertRaises(AmbiguousProfile):
+            self.repo.save_chat_turn(identifier, "DEMO_AUTO", "demo-rates", "?", response, {"turn_count": 15})
+        self.assertEqual(len(self.repo.messages(identifier)), 16)
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Barrier
+        barrier = Barrier(2)
+        internal = {**tools._chat_update, 'turn_count': 16}
+        def concurrent_write():
+            barrier.wait(timeout=5)
+            try:
+                self.repo.save_chat_turn(identifier, 'DEMO_AUTO', 'demo-rates', '?', response, internal)
+                return 'saved'
+            except AmbiguousProfile:
+                return 'stale'
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(concurrent_write) for _ in range(2)]
+            self.assertEqual(sorted(f.result(timeout=10) for f in futures), ['saved', 'stale'])
+        self.assertEqual(len(self.repo.messages(identifier)), 17)
 
     def test_unified_backend_with_real_sql_and_fts_and_synthetic_data(self):
         from datetime import datetime, timezone

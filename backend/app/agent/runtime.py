@@ -1,6 +1,7 @@
 """One LLM client and lazy RAG store per process; repositories own all SQL."""
 import asyncio
 import os
+import inspect
 from types import SimpleNamespace
 
 from app.agent.config import LLMConfigurationError
@@ -9,6 +10,7 @@ from app.agent.llm_client import LLMClient
 from app.agent.service import compact_profile, event_date
 from app.agent.tools import ServiceTools
 from app.agent.prompts import PROMPT_VERSION
+from app.agent.relevance import RelevanceEngine
 from app.rag.hybrid import POLICY_VERSION
 from app.rag.service_tools import HybridServiceTools
 
@@ -18,6 +20,7 @@ class AgentRuntime:
         self.repository, self.llm, self.store = repository, llm, store
         self.analysis_lock = asyncio.Lock()
         self._store_lock = asyncio.Lock()
+        self.relevance_engine = RelevanceEngine(llm)
 
     @classmethod
     def from_env(cls, repository):
@@ -31,6 +34,7 @@ class AgentRuntime:
         return cls(repository, llm=llm)
 
     async def aclose(self):
+        await self.relevance_engine.aclose()
         if self.llm is not None and hasattr(self.llm, "aclose"):
             await self.llm.aclose()
 
@@ -59,24 +63,39 @@ class AgentRuntime:
     async def tools(self, company_id):
         repo = self.repository
         store = await self.get_store()
-        return await asyncio.to_thread(HybridServiceTools, store=store, llm=self.llm, company_id=company_id,
+        result = await asyncio.to_thread(HybridServiceTools, store=store, llm=self.llm, company_id=company_id,
             profile_loader=lambda identifier: asyncio.to_thread(repo.profile, identifier),
             news_loader=lambda identifier: asyncio.to_thread(repo.load_news, identifier),
             news_lister=lambda **kw: asyncio.to_thread(repo.list_news, **kw),
             counterparties_loader=lambda identifier, **kw: asyncio.to_thread(repo.payment_links, identifier, **kw))
+        result.relevance_engine = self.relevance_engine
+        return result
 
     def feed_tools(self, company_id):
-        """Ranking needs only corporate data and recent news, without RAG or LLM."""
+        """Use the shared compact interpretation cache; no RAG initialization."""
         repo = self.repository
-        return ServiceTools(llm=None, company_id=company_id,
+        result = ServiceTools(llm=self.llm, company_id=company_id,
             profile_loader=lambda identifier: asyncio.to_thread(repo.profile, identifier),
             news_loader=lambda identifier: asyncio.to_thread(repo.load_news, identifier),
             news_lister=lambda **kw: asyncio.to_thread(repo.list_news, **kw),
             bank_searcher=None, corpus_version="unused")
+        result._pagination_supported = "offset" in inspect.signature(repo.list_news).parameters
+        result.relevance_engine = self.relevance_engine
+        return result
 
     def chat_tools(self, company_id):
-        # Chat requires no new retrieval, embeddings, or company-wide SQL scan.
-        return SimpleNamespace(company_id=company_id, llm=self.llm)
+        # Use only an already initialized local store; never load embeddings for chat.
+        result = SimpleNamespace(company_id=company_id, llm=self.llm,
+                                 _can_save_chat=callable(getattr(self.repository, "save_chat_turn", None)))
+        if self.store is not None:
+            async def search(query, *, as_of, limit):
+                try:
+                    return await asyncio.to_thread(self.store.search, query, limit, as_of=as_of, kind="bank")
+                except Exception:
+                    # Optional retrieval cannot disclose database/provider exception text.
+                    raise AgentUnavailable("Дополнительный поиск временно недоступен") from None
+            result.search_chat_evidence = search
+        return result
 
     async def cache_key(self, company_id, news_id, tools):
         profile = await tools.get_company_profile(company_id)

@@ -1,0 +1,3335 @@
+{
+  "notice": "Ручная разметка бизнес-каналов; текущий выбор — первые 10 профилей, прочитанные 25.10.2026. Не гарантия качества будущих новостей.",
+  "profiles": [
+    {
+      "company_id": "synthetic-construction",
+      "industry": "Строительство жилых зданий",
+      "features": {
+        "industry_code": "41.20"
+      },
+      "label": "construction"
+    },
+    {
+      "company_id": "synthetic-property",
+      "industry": "Управление недвижимостью",
+      "features": {
+        "industry_code": "68.32"
+      },
+      "label": "property"
+    },
+    {
+      "company_id": "synthetic-rental",
+      "industry": "Аренда и лизинг легковых автомобилей и легких автотранспортных средств",
+      "features": {
+        "industry_code": "77.11"
+      },
+      "label": "rental"
+    },
+    {
+      "company_id": "synthetic-transport",
+      "industry": "Перевозка грузов",
+      "features": {
+        "industry_code": "49.41"
+      },
+      "label": "transport"
+    },
+    {
+      "company_id": "synthetic-agriculture",
+      "industry": "Выращивание зерновых",
+      "features": {
+        "industry_code": "01.11"
+      },
+      "label": "agriculture"
+    },
+    {
+      "company_id": "synthetic-industrial",
+      "industry": "Производство станков",
+      "features": {
+        "industry_code": "28.41"
+      },
+      "label": "industrial"
+    },
+    {
+      "company_id": "synthetic-it",
+      "industry": "Разработка программного обеспечения",
+      "features": {
+        "industry_code": "62.01"
+      },
+      "label": "it"
+    },
+    {
+      "company_id": "synthetic-games",
+      "industry": "Издание компьютерных игр",
+      "features": {
+        "industry_code": "58.21"
+      },
+      "label": "games"
+    },
+    {
+      "company_id": "synthetic-research",
+      "industry": "Научные исследования",
+      "features": {
+        "industry_code": "72.1"
+      },
+      "label": "research"
+    },
+    {
+      "company_id": "synthetic-trade",
+      "industry": "Розничная торговля",
+      "features": {
+        "industry_code": "47.11"
+      },
+      "label": "trade"
+    },
+    {
+      "company_id": "synthetic-services",
+      "industry": "Парикмахерская",
+      "features": {
+        "industry_code": "96.02"
+      },
+      "label": "services"
+    },
+    {
+      "company_id": "synthetic-data",
+      "industry": "Обработка данных",
+      "features": {
+        "industry_code": "63.11"
+      },
+      "label": "data"
+    },
+    {
+      "company_id": "synthetic-equipment_trade",
+      "industry": "Торговля машинами",
+      "features": {
+        "industry_code": "46.69.9"
+      },
+      "label": "equipment_trade"
+    },
+    {
+      "company_id": "synthetic-beverages",
+      "industry": "Магазин напитков",
+      "features": {
+        "industry_code": "47.25"
+      },
+      "label": "beverages"
+    },
+    {
+      "company_id": "synthetic-engineering",
+      "industry": "Инженерные изыскания",
+      "features": {
+        "industry_code": "71.12"
+      },
+      "label": "engineering"
+    },
+    {
+      "company_id": "synthetic-unknown",
+      "industry": "Прочая деятельность",
+      "features": {
+        "industry_code": ""
+      },
+      "label": "unknown"
+    },
+    {
+      "company_id": "U_1",
+      "industry": "Торговля оптовая неспециализированная",
+      "industry_code": "46.90",
+      "region": "Москва",
+      "features": {
+        "industry_code": "46.90",
+        "industry_name": "Торговля оптовая неспециализированная",
+        "company_age_range": "16-25",
+        "employees_fns_range": "Менее 15",
+        "region": "Москва",
+        "city": "г. Москва",
+        "bank_products": {
+          "settlement": false,
+          "guarantee": false,
+          "loan": false,
+          "leasing": true,
+          "deposit": false,
+          "payroll": true,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "trade"
+    },
+    {
+      "company_id": "U_10",
+      "industry": "Деятельность по обработке данных, предоставление услуг по размещению информации и связанная с этим деятельность",
+      "industry_code": "63.11",
+      "region": "Санкт-Петербург",
+      "features": {
+        "industry_code": "63.11",
+        "industry_name": "Деятельность по обработке данных, предоставление услуг по размещению информации и связанная с этим деятельность",
+        "company_age_range": "16-25",
+        "employees_fns_range": "16-100",
+        "region": "Санкт-Петербург",
+        "city": "г. Санкт-Петербург",
+        "bank_products": {
+          "settlement": true,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "data"
+    },
+    {
+      "company_id": "U_1000",
+      "industry": "Научные исследования и разработки в области естественных и технических наук",
+      "industry_code": "72.1",
+      "region": "Свердловская область",
+      "features": {
+        "industry_code": "72.1",
+        "industry_name": "Научные исследования и разработки в области естественных и технических наук",
+        "company_age_range": "16-25",
+        "employees_fns_range": "Менее 15",
+        "region": "Свердловская область",
+        "city": "г. Екатеринбург",
+        "bank_products": {
+          "settlement": true,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "research"
+    },
+    {
+      "company_id": "U_100000",
+      "industry": "Торговля розничная напитками в специализированных магазинах",
+      "industry_code": "47.25",
+      "region": "Санкт-Петербург",
+      "features": {
+        "industry_code": "47.25",
+        "industry_name": "Торговля розничная напитками в специализированных магазинах",
+        "company_age_range": "8-15",
+        "employees_fns_range": "Менее 15",
+        "region": "Санкт-Петербург",
+        "city": "г. Санкт-Петербург",
+        "bank_products": {
+          "settlement": false,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": true,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "beverages"
+    },
+    {
+      "company_id": "U_100001",
+      "industry": "Деятельность вспомогательная прочая, связанная с перевозками",
+      "industry_code": "52.29",
+      "region": "Московская область",
+      "features": {
+        "industry_code": "52.29",
+        "industry_name": "Деятельность вспомогательная прочая, связанная с перевозками",
+        "company_age_range": "4-7",
+        "employees_fns_range": "Менее 15",
+        "region": "Московская область",
+        "city": "г. Красногорск пос. Путилково",
+        "bank_products": {
+          "settlement": true,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": true,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "transport"
+    },
+    {
+      "company_id": "U_100009",
+      "industry": "Аренда и лизинг легковых автомобилей и легких автотранспортных средств",
+      "industry_code": "77.11",
+      "region": "Республика Татарстан",
+      "features": {
+        "industry_code": "77.11",
+        "industry_name": "Аренда и лизинг легковых автомобилей и легких автотранспортных средств",
+        "company_age_range": "4-7",
+        "employees_fns_range": "Менее 15",
+        "region": "Республика Татарстан",
+        "city": "г. Казань",
+        "bank_products": {
+          "settlement": false,
+          "guarantee": false,
+          "loan": false,
+          "leasing": true,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "rental"
+    },
+    {
+      "company_id": "U_100013",
+      "industry": "Строительство жилых и нежилых зданий",
+      "industry_code": "41.20",
+      "region": "Москва",
+      "features": {
+        "industry_code": "41.20",
+        "industry_name": "Строительство жилых и нежилых зданий",
+        "company_age_range": "8-15",
+        "employees_fns_range": "16-100",
+        "region": "Москва",
+        "city": "г. Москва",
+        "bank_products": {
+          "settlement": false,
+          "guarantee": false,
+          "loan": false,
+          "leasing": true,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "construction"
+    },
+    {
+      "company_id": "U_100017",
+      "industry": "Торговля оптовая прочими машинами, приборами, аппаратурой и оборудованием общепромышленного и специального назначения",
+      "industry_code": "46.69.9",
+      "region": "Москва",
+      "features": {
+        "industry_code": "46.69.9",
+        "industry_name": "Торговля оптовая прочими машинами, приборами, аппаратурой и оборудованием общепромышленного и специального назначения",
+        "company_age_range": "8-15",
+        "employees_fns_range": "16-100",
+        "region": "Москва",
+        "city": "г. Москва",
+        "bank_products": {
+          "settlement": true,
+          "guarantee": true,
+          "loan": false,
+          "leasing": true,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": true,
+        "customs_countries": [
+          "ОАЭ",
+          "КИТАЙ",
+          "ЛИТВА"
+        ]
+      },
+      "label": "equipment_trade"
+    },
+    {
+      "company_id": "U_10002",
+      "industry": "Управление недвижимым имуществом за вознаграждение или на договорной основе",
+      "industry_code": "68.32",
+      "region": "Санкт-Петербург",
+      "features": {
+        "industry_code": "68.32",
+        "industry_name": "Управление недвижимым имуществом за вознаграждение или на договорной основе",
+        "company_age_range": "16-25",
+        "employees_fns_range": "16-100",
+        "region": "Санкт-Петербург",
+        "city": "г. Санкт-Петербург",
+        "bank_products": {
+          "settlement": false,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "property"
+    },
+    {
+      "company_id": "U_100023",
+      "industry": "Деятельность в области инженерных изысканий, инженерно-технического проектирования, управления проектами строительства, выполнения строительного контроля и авторского надзора, предоставление технических консультаций в этих областях",
+      "industry_code": "71.12",
+      "region": "Санкт-Петербург",
+      "features": {
+        "industry_code": "71.12",
+        "industry_name": "Деятельность в области инженерных изысканий, инженерно-технического проектирования, управления проектами строительства, выполнения строительного контроля и авторского надзора, предоставление технических консультаций в этих областях",
+        "company_age_range": "4-7",
+        "employees_fns_range": "Менее 15",
+        "region": "Санкт-Петербург",
+        "city": "г. Санкт-Петербург",
+        "bank_products": {
+          "settlement": true,
+          "guarantee": false,
+          "loan": false,
+          "leasing": false,
+          "deposit": false,
+          "payroll": false,
+          "factoring": false
+        },
+        "has_customs_data": false,
+        "customs_countries": []
+      },
+      "label": "engineering"
+    }
+  ],
+  "news": [
+    {
+      "id": "matrix-0",
+      "title": "Изменились требования к стройматериалам и строительству жилых зданий",
+      "body": "Изменились требования к стройматериалам и строительству жилых зданий.",
+      "published_at": "2026-10-20",
+      "label": "construction"
+    },
+    {
+      "id": "matrix-1",
+      "title": "Коммерческая недвижимость: изменяются арендные платежи",
+      "body": "Коммерческая недвижимость: изменяются арендные платежи.",
+      "published_at": "2026-10-20",
+      "label": "property"
+    },
+    {
+      "id": "matrix-2",
+      "title": "Выросла стоимость автомобилей, сократилось предложение на авторынке",
+      "body": "Выросла стоимость автомобилей, сократилось предложение на авторынке.",
+      "published_at": "2026-10-20",
+      "label": "rental"
+    },
+    {
+      "id": "matrix-3",
+      "title": "РЖД меняет тарифы на грузовые перевозки, склады обновляют условия логистики",
+      "body": "РЖД меняет тарифы на грузовые перевозки, склады обновляют условия логистики.",
+      "published_at": "2026-10-20",
+      "label": "transport"
+    },
+    {
+      "id": "matrix-4",
+      "title": "Для сельскохозяйственных предприятий изменились правила посевной",
+      "body": "Для сельскохозяйственных предприятий изменились правила посевной.",
+      "published_at": "2026-10-20",
+      "label": "agriculture"
+    },
+    {
+      "id": "matrix-5",
+      "title": "Изменились требования к промышленному оборудованию и станкам",
+      "body": "Изменились требования к промышленному оборудованию и станкам.",
+      "published_at": "2026-10-20",
+      "label": "industrial"
+    },
+    {
+      "id": "matrix-6",
+      "title": "Новые требования к разработчикам программного обеспечения и кибербезопасности",
+      "body": "Новые требования к разработчикам программного обеспечения и кибербезопасности.",
+      "published_at": "2026-10-20",
+      "label": "it"
+    },
+    {
+      "id": "matrix-7",
+      "title": "Вышла видеоигра: виртуальное строительство зданий и городов",
+      "body": "Вышла видеоигра: виртуальное строительство зданий и городов.",
+      "published_at": "2026-10-20",
+      "label": "games"
+    },
+    {
+      "id": "matrix-8",
+      "title": "Научные исследования: изменяются условия научных грантов лабораториям",
+      "body": "Научные исследования: изменяются условия научных грантов лабораториям.",
+      "published_at": "2026-10-20",
+      "label": "research"
+    },
+    {
+      "id": "matrix-9",
+      "title": "Розничная и оптовая торговля: изменились правила работы магазинов",
+      "body": "Розничная и оптовая торговля: изменились правила работы магазинов.",
+      "published_at": "2026-10-20",
+      "label": "trade"
+    },
+    {
+      "id": "matrix-10",
+      "title": "Изменились требования к парикмахерским и салонам красоты",
+      "body": "Изменились требования к парикмахерским и салонам красоты.",
+      "published_at": "2026-10-20",
+      "label": "services"
+    },
+    {
+      "id": "matrix-11",
+      "title": "Изменились требования к обработке данных в дата-центрах",
+      "body": "Изменились требования к обработке данных в дата-центрах.",
+      "published_at": "2026-10-20",
+      "label": "data"
+    },
+    {
+      "id": "matrix-12",
+      "title": "Изменяются условия поставки промышленного оборудования и станков",
+      "body": "Изменяются условия поставки промышленного оборудования и станков.",
+      "published_at": "2026-10-20",
+      "label": "equipment_trade"
+    },
+    {
+      "id": "matrix-13",
+      "title": "Изменились правила продажи алкогольных напитков",
+      "body": "Изменились правила продажи алкогольных напитков.",
+      "published_at": "2026-10-20",
+      "label": "beverages"
+    },
+    {
+      "id": "matrix-14",
+      "title": "Новые требования к инженерным изысканиям и строительному контролю",
+      "body": "Новые требования к инженерным изысканиям и строительному контролю.",
+      "published_at": "2026-10-20",
+      "label": "engineering"
+    },
+    {
+      "id": "matrix-15",
+      "title": "Выросли вклады физических лиц в рублях",
+      "body": "Выросли вклады физических лиц в рублях.",
+      "published_at": "2026-10-20",
+      "label": "none"
+    },
+    {
+      "id": "matrix-16",
+      "title": "Памятная монета: номинал в рублях, Санкт-Петербургский монетный двор",
+      "body": "Памятная монета: номинал в рублях, Санкт-Петербургский монетный двор.",
+      "published_at": "2026-10-20",
+      "label": "none"
+    },
+    {
+      "id": "matrix-17",
+      "title": "Продавцам маркетплейсов предоставят кредитные каникулы",
+      "body": "Продавцам маркетплейсов предоставят кредитные каникулы.",
+      "published_at": "2026-10-20",
+      "label": "none"
+    }
+  ],
+  "cases": [
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-0",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-14",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-construction",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-1",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-property",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-2",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-rental",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-3",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-transport",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-4",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-agriculture",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-5",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-12",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-industrial",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-6",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-it",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-7",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-games",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-8",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-research",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-9",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-trade",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-10",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-services",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-11",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-data",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-5",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-12",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-equipment_trade",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-13",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-beverages",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-14",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-engineering",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "synthetic-unknown",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-9",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-11",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-8",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_1000",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-13",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100000",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-3",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100001",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-2",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100009",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-0",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-14",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100013",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-5",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-12",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100017",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-1",
+      "relevant": true,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-14",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_10002",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-0",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-1",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-2",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-3",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-4",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-5",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-6",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-7",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-8",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-9",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-10",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-11",
+      "relevant": false,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-12",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-13",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-14",
+      "relevant": true,
+      "split": "held_out"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-15",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-16",
+      "relevant": false,
+      "split": "development"
+    },
+    {
+      "profile": "U_100023",
+      "news": "matrix-17",
+      "relevant": false,
+      "split": "held_out"
+    }
+  ]
+}

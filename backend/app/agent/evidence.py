@@ -13,8 +13,8 @@ def bank_evidence_gap(news, item, as_of):
         published = date.fromisoformat(item["published_at"])
     except (KeyError, ValueError, TypeError):
         return "Неизвестна дата банковского материала"
-    if published > as_of or (as_of - published).days > 365:
-        return "Дата материала не подходит к событию"
+    if published > as_of:
+        return "Материал опубликован после выбранного события"
     text = item.get("text", "")
     event = f"{news.get('title', '')} {news.get('body', '')}"
     event_tags = set(classify_news(news))

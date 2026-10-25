@@ -148,6 +148,17 @@ class ServiceTools:
             raise InvalidInput("Превышен лимит новостей")
         return [news_from_record(n) for n in (await self.news_lister(limit=limit))[:limit]]
 
+    async def list_news_page(self, *, limit=200, offset=0):
+        import inspect
+        if not 1 <= limit <= 200 or offset not in {0, 200, 400}:
+            raise InvalidInput("Недопустимая страница новостей")
+        supported = getattr(self, "_pagination_supported", None)
+        if supported is None:
+            supported = "offset" in inspect.signature(self.news_lister).parameters
+        if not supported:
+            return await self.list_news(limit) if offset == 0 else []
+        return [news_from_record(n) for n in (await self.news_lister(limit=limit, offset=offset))[:limit]]
+
     async def get_company_counterparties(self, company_id, direction="outgoing"):
         if company_id != self.company_id or direction not in {"incoming", "outgoing"}:
             raise InvalidInput("Недопустимый запрос платёжных связей")

@@ -273,7 +273,7 @@ class PipelineTests(unittest.IsolatedAsyncioTestCase):
         self.tools.llm = MutatingLLM(mutate)
         response = await app.ask(public["insight_id"], "Вопрос")
         self.assertEqual(response["source_ids"], [])
-        self.assertTrue(any("резервный" in warning for warning in response["warnings"]))
+        self.assertTrue(any("подтвердить" in warning for warning in response["warnings"]))
 
 
 class RetrievalTests(unittest.TestCase):

@@ -10,6 +10,7 @@ from typing import TypedDict
 from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
 
+from app.agent.language import compact_warnings, ensure_human
 from app.agent.errors import EvidenceError, InvalidInput
 from app.agent.evidence import bank_evidence_gap, decision_rates
 from app.agent.schema import AgentAnalysis, InsightResult
@@ -18,6 +19,7 @@ from app.agent.service import (compact_profile, complete_json, event_date, execu
 from app.agent.state import AgentLimits, AgentState, Plan
 from app.agent.tools import validate_profile
 from app.agent.verifier import verify_result
+from app.agent.relevance import RelevanceEngine, normalize_assessment
 
 
 @dataclass
@@ -36,6 +38,7 @@ class Workflow(TypedDict, total=False):
     result: InsightResult | None
     error: str | None
     analysis: dict
+    schema_errors: list[dict]
 
 
 async def load_company_and_news(data: Workflow, runtime: Runtime[GraphContext]):
@@ -64,15 +67,51 @@ async def plan_analysis(data: Workflow, runtime: Runtime[GraphContext]):
     state = data["agent"]
     stage = "replan" if data.get("replans", 0) else "plan"
     payload = {"profile": state.profile, "news": state.news, "warnings": state.warnings,
+               "business_context": state.business_context,
+               "event_relevance": state.event_relevance,
                "previous_queries": state.queries,
                "instruction": "Составь короткие тематические запросы. При повторном поиске измени формулировку; отсутствие позиции банка допустимо."}
-    plan = await complete_json(runtime.context.tools, state, runtime.context.limits, stage, payload, Plan)
-    state.record("plan", f"Сформирован {stage}; банковских запросов: {len(plan.search_queries)}")
+    try:
+        plan = await complete_json(runtime.context.tools, state, runtime.context.limits, stage, payload, Plan)
+    except EvidenceError as exc:
+        if not getattr(exc, 'schema_errors', None):
+            raise
+        # A malformed auxiliary event description must not block the main analysis.
+        # Use a bounded search query from the actual news; do not invent relevance
+        # and do not spend another paid call repairing the auxiliary plan.
+        query = (state.news.get('title') or state.news['body'])[:150].strip()
+        plan = Plan(search_queries=[query])
+        state.warnings.append('Модель не оформила план поиска; материалы подбираются по заголовку выбранной новости.')
+        state.record('verify', 'Использован поиск по теме новости после ошибки формата плана', status='insufficient_evidence')
+    if plan.relevance is not None:
+        assessed = normalize_assessment(plan.relevance, state.business_context['facts'], state.news)
+        state.event_relevance = assessed or {"level": "none", "fields": [], "quote": "", "event": "",
+                                           "affected": "", "mechanism": "", "conditions": []}
+        if state.event_relevance['level'] == 'none':
+            plan.need_counterparties = False
+            plan.related_news_query = None
+    state.record("plan", f"Подготовлен план поиска; банковских запросов: {len(plan.search_queries)}")
     return {"plan": plan}
+
+
+async def describe_company(data: Workflow, runtime: Runtime[GraphContext]):
+    state, tools, limits = data['agent'], runtime.context.tools, runtime.context.limits
+    engine = getattr(tools, 'relevance_engine', None) or RelevanceEngine(tools.llm)
+    async def generate(payload, model):
+        return await complete_json(tools, state, limits, 'company_profile', payload, model)
+    state.business_context = await engine.company_context(
+        state.profile, generate=generate, allow_llm=limits.max_llm_calls >= 3)
+    state.record('plan', 'Отделены сведения компании от отраслевых предположений; подготовлен контекст влияния событий')
+    if engine.enabled and not state.business_context['inferred']:
+        state.warnings.append('Развёрнутый профиль компании недоступен; используются только исходные сведения.')
+    return {'agent': state}
 
 
 async def find_evidence(data: Workflow, runtime: Runtime[GraphContext]):
     state = data["agent"]
+    if (state.event_relevance or {}).get('level') == 'none':
+        state.record('execute', 'Содержательная связь с компанией не установлена; дополнительный поиск не требуется')
+        return {'agent': state}
     await execute_plan(data["plan"], state, runtime.context.tools, runtime.context.limits, event_date(state.news))
     return {"agent": state}
 
@@ -110,8 +149,9 @@ async def assess_evidence(data: Workflow):
 
 async def after_assessment(data: Workflow, runtime: Runtime[GraphContext]):
     state, limits = data["agent"], runtime.context.limits
-    if (not data["enough"] and data.get("replans", 0) == 0
-            and state.llm_calls < limits.max_llm_calls - 1 and state.tool_calls < limits.max_tool_calls):
+    if (not data["enough"] and (state.event_relevance or {}).get('level') != 'none' and data.get("replans", 0) == 0
+            and state.llm_calls < limits.max_llm_calls - 2 and state.tool_calls < limits.max_tool_calls
+            and state.output_limit - state.output_reserved > limits.analysis_tokens + limits.plan_tokens):
         return "refine_search"
     return "generate_analysis"
 
@@ -126,11 +166,13 @@ async def generate_analysis(data: Workflow, runtime: Runtime[GraphContext]):
     try:
         result = await complete_json(tools, state, runtime.context.limits,
             "repair" if data.get("repairs", 0) else "analyze",
-            {**context, "warnings": state.warnings, "verification_error": data.get("error")}, InsightResult)
+            {**context, "warnings": state.warnings, "verification_error": data.get("error"),
+             "schema_errors": data.get('schema_errors', [])}, InsightResult)
         state.record("execute", "Получен структурированный анализ; проверяем доказательства")
-        return {"context": context, "result": result, "error": None}
+        return {"context": context, "result": result, "error": None, 'schema_errors': []}
     except EvidenceError as exc:
-        return {"context": context, "result": None, "error": str(exc)}
+        return {"context": context, "result": None, "error": str(exc),
+                'schema_errors': getattr(exc, 'schema_errors', [])}
 
 
 async def verify_analysis(data: Workflow):
@@ -141,14 +183,15 @@ async def verify_analysis(data: Workflow):
         except EvidenceError as exc:
             error = str(exc)
     if error:
-        data["agent"].record("verify", error, status="insufficient_evidence")
+        data["agent"].record("verify", "Объяснение требует исправления: не подтверждены формулировка или доказательства", status="insufficient_evidence")
     return {"error": error}
 
 
 async def after_verification(data: Workflow, runtime: Runtime[GraphContext]):
     if not data.get("error"):
         return "finish"
-    if data.get("repairs", 0) == 0 and data["agent"].llm_calls < runtime.context.limits.max_llm_calls:
+    if (data.get("repairs", 0) == 0 and data["agent"].llm_calls < runtime.context.limits.max_llm_calls
+            and data["agent"].output_limit - data["agent"].output_reserved >= 500):
         return "repair_analysis"
     raise EvidenceError(data["error"])
 
@@ -159,21 +202,35 @@ async def repair_analysis(data: Workflow):
 
 async def finish(data: Workflow):
     state, result = data["agent"], data["result"]
-    result.warnings = list(dict.fromkeys([*result.warnings, *state.warnings]))
+    result.warnings = compact_warnings([*result.warnings, *state.warnings])
     if result.bank_position.status == "not_found":
         result.warnings.append("Подтверждённая позиция банка по этому событию не найдена.")
-    state.record("verify", "Проверены источники, выдержки, поля компании и даты")
+    available = [item for item in state.evidence.values() if item['source']['type'] == 'bank']
+    used_ids = {source.id for source in result.sources}
+    for item in available:
+        if (item['source']['id'] in result.bank_position.source_ids
+                and item.get('published_at', '') < data['context'].get('as_of', '')):
+            result.ai_interpretation += f"\n\nМатериал Альфа-Банка от {item['published_at']} — исторический аналитический фон; он не устанавливает текущие условия договоров."
+        if item['source']['id'] not in used_ids:
+            state.record('verify', 'Найден проверенный банковский материал, но он не использован в выводе; дополнительных утверждений на его основе нет', status='insufficient_evidence')
+    if result.suggested_actions:
+        if not any(action in result.ai_interpretation for action in result.suggested_actions):
+            result.ai_interpretation += '\n\nДоступные действия: ' + ' '.join(result.suggested_actions)
+    result.warnings = compact_warnings(result.warnings)
+    ensure_human(*(row['details'] for row in state.trace))
+    state.record("verify", "Проверены источники, выдержки, признаки компании, даты и практические действия")
     return {"analysis": AgentAnalysis(result=result, agent_trace=state.trace).model_dump(mode="json")}
 
 
 @lru_cache(maxsize=1)
 def analysis_graph():
     graph = StateGraph(Workflow, context_schema=GraphContext)
-    for node in (load_company_and_news, plan_analysis, find_evidence, assess_evidence,
+    for node in (load_company_and_news, describe_company, plan_analysis, find_evidence, assess_evidence,
                  refine_search, generate_analysis, verify_analysis, repair_analysis, finish):
         graph.add_node(node.__name__, node)
     graph.add_edge(START, "load_company_and_news")
-    graph.add_edge("load_company_and_news", "plan_analysis")
+    graph.add_edge("load_company_and_news", "describe_company")
+    graph.add_edge("describe_company", "plan_analysis")
     graph.add_edge("plan_analysis", "find_evidence")
     graph.add_edge("find_evidence", "assess_evidence")
     graph.add_conditional_edges("assess_evidence", after_assessment, ["refine_search", "generate_analysis"])

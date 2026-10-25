@@ -1,6 +1,7 @@
 """Default prototype repository. Igor can inject another repository with the same methods."""
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from datetime import datetime
@@ -133,6 +134,35 @@ def save_answer(identifier, question, response):
         session.add(SavedMessage(insight_id=identifier, question=question, response=response))
 
 
+def save_chat_turn(identifier, company_id, news_id, question, response, internal):
+    """Atomically append a turn and merge only our optional area under row lock.
+
+    The original evidence snapshot and public analysis are immutable. A stale
+    concurrent response is rejected rather than silently replacing newer memory.
+    """
+    with SessionLocal.begin() as session:
+        row = session.scalar(select(SavedInsight).where(SavedInsight.id == identifier).with_for_update())
+        if row is None:
+            raise NotFound("Анализ не найден")
+        if row.company_id != company_id or row.news_id != news_id:
+            raise InvalidInput("Ответ относится к другому анализу или компании")
+        total = session.scalar(select(func.count()).select_from(SavedMessage).where(SavedMessage.insight_id == identifier))
+        if internal.get("turn_count") != total:
+            from app.agent.errors import AmbiguousProfile
+            raise AmbiguousProfile("Разговор изменился во время подготовки ответа; повторите вопрос")
+        context = copy.deepcopy(row.context)
+        previous = context.get("_chat", {})
+        evidence = {**previous.get("evidence", {}), **internal.get("evidence", {})}
+        # Keep only a bounded audit trail, in addition to the durable message history.
+        evidence = dict(list(evidence.items())[-12:])
+        turns = (previous.get("turns", []) + [{"question": question, "response": response,
+                 "evidence_ids": list(internal.get("evidence", {})), "calculations": internal.get("calculations", []),
+                 "usage": internal.get("usage", [])}])[-12:]
+        context["_chat"] = {"memory": internal.get("memory", {}), "evidence": evidence, "turns": turns}
+        row.context = context
+        session.add(SavedMessage(insight_id=identifier, question=question, response=response))
+
+
 def messages(identifier):
     load_insight(identifier)
     with SessionLocal() as session:
@@ -142,11 +172,11 @@ def messages(identifier):
 
 
 def chat_history(identifier):
-    """Only the last two turns enter model memory; keep total for cycle resets."""
+    """Bounded user history, supplemented by optional compact task state."""
     with SessionLocal() as session:
         query = select(SavedMessage).where(SavedMessage.insight_id == identifier)
         total = session.scalar(select(func.count()).select_from(SavedMessage).where(SavedMessage.insight_id == identifier))
-        rows = list(session.scalars(query.order_by(SavedMessage.id.desc()).limit(2)))
+        rows = list(session.scalars(query.order_by(SavedMessage.id.desc()).limit(12)))
         return {"turn_count": total, "items": [{"question": row.question, "response": row.response} for row in reversed(rows)]}
 
 
